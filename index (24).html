@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔍 Avakin Share — Anonim Sosyal Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface-hover: #f0f0ee;
+  --border: #e8e8e5;
+  --border-soft: #f0f0ee;
+  --text-primary: #111110;
+  --text-secondary: #6b6b67;
+  --text-muted: #9b9b96;
+  --accent: #111110;
+  --accent-soft: #f0f0ee;
+  --like-active: #e5484d;
+  --like-bg: #fff0f0;
+  --admin-color: #7c3aed;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.10);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --nav-h: 60px;
+  --font: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-theme="dark"] {
+  --bg: #111110;
+  --surface: #1a1a18;
+  --surface-hover: #232321;
+  --border: #2a2a28;
+  --border-soft: #222220;
+  --text-primary: #f0f0ee;
+  --text-secondary: #8a8a86;
+  --text-muted: #5a5a56;
+  --accent: #f0f0ee;
+  --accent-soft: #2a2a28;
+  --like-active: #ff6369;
+  --like-bg: #2a1a1a;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* NAVBAR */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(255,255,255,0.85);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background var(--transition), border-color var(--transition);
+}
+[data-theme="dark"] .navbar { background: rgba(17,17,16,0.88); }
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
+.logo-mark {
+  width: 32px; height: 32px;
+  background: var(--text-primary);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  transition: transform var(--transition);
+}
+.logo-mark:hover { transform: rotate(-5deg) scale(1.05); }
+.nav-title { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-primary); }
+.nav-center {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  font-family: var(--font-mono); letter-spacing: 0.02em;
+}
+.nav-actions { display: flex; align-items: center; gap: 8px; }
+.btn-icon {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all var(--transition); outline: none;
+}
+.btn-icon:hover { background: var(--surface-hover); color: var(--text-primary); border-color: var(--text-muted); }
+.btn-icon svg { width: 16px; height: 16px; }
+
+/* SYNC INDICATOR */
+.sync-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #22c55e;
+  margin-left: 4px;
+  animation: pulse 2s ease infinite;
+  display: inline-block;
+}
+.sync-dot.syncing { background: #f59e0b; animation: spin 0.8s linear infinite; border-radius: 0; width: 10px; height: 10px; border: 2px solid transparent; border-top-color: #f59e0b; border-radius: 50%; }
+.sync-dot.error { background: #ef4444; animation: none; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* SIDEBAR */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 1100; opacity: 0; pointer-events: none;
+  transition: opacity var(--transition); backdrop-filter: blur(2px);
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+.sidebar {
+  position: fixed; top: 0; right: 0;
+  width: 280px; height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  z-index: 1200; display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-lg);
+}
+.sidebar.open { transform: translateX(0); }
+.sidebar-header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sidebar-header h3 { font-size: 13px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--font-mono); }
+.sidebar-nav { padding: 16px 12px; flex: 1; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 12px; border-radius: var(--radius-md);
+  cursor: pointer; transition: all var(--transition);
+  font-size: 15px; font-weight: 500; color: var(--text-secondary);
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: var(--surface-hover); color: var(--text-primary); }
+.nav-item.active { background: var(--accent-soft); color: var(--text-primary); }
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+.nav-item.admin-item { color: var(--admin-color); margin-top: 4px; }
+.nav-item.admin-item:hover { background: #f3f0ff; color: var(--admin-color); }
+[data-theme="dark"] .nav-item.admin-item:hover { background: #2d1b69; }
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); }
+.anon-badge {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; background: var(--accent-soft);
+  border-radius: var(--radius-md); border: 1px solid var(--border);
+}
+.anon-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--text-primary);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.anon-avatar svg { width: 16px; height: 16px; color: var(--surface); }
+.anon-info p { font-size: 13px; font-weight: 600; color: var(--text-primary); font-family: var(--font-mono); }
+.anon-info span { font-size: 11px; color: var(--text-muted); }
+
+/* LAYOUT */
+.main { max-width: 680px; margin: 0 auto; padding: calc(var(--nav-h) + 24px) 16px 80px; }
+.page { display: none; }
+.page.active { display: block; animation: fadeUp 240ms ease both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* COMPOSE */
+.compose-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); padding: 20px; margin-bottom: 24px; box-shadow: var(--shadow-sm);
+}
+.compose-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--accent-soft); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  font-size: 13px; font-weight: 600; font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+.compose-meta .handle { font-size: 13px; font-weight: 600; font-family: var(--font-mono); color: var(--text-primary); }
+.compose-meta .subtitle { font-size: 11px; color: var(--text-muted); }
+.compose-textarea {
+  width: 100%; border: none; outline: none; resize: none;
+  font-family: var(--font); font-size: 15px; color: var(--text-primary);
+  background: transparent; min-height: 80px; line-height: 1.6;
+}
+.compose-textarea::placeholder { color: var(--text-muted); }
+.compose-image-preview { position: relative; margin-top: 12px; border-radius: var(--radius-md); overflow: hidden; display: none; }
+.compose-image-preview img { width: 100%; max-height: 300px; object-fit: cover; display: block; }
+.remove-image {
+  position: absolute; top: 8px; right: 8px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(0,0,0,0.6); color: #fff; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background var(--transition);
+}
+.remove-image:hover { background: rgba(0,0,0,0.8); }
+.remove-image svg { width: 14px; height: 14px; }
+.compose-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-soft);
+}
+.compose-tools { display: flex; gap: 6px; }
+.tool-btn {
+  padding: 7px 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-secondary); font-size: 13px; font-family: var(--font);
+  cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all var(--transition);
+}
+.tool-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+.tool-btn svg { width: 15px; height: 15px; }
+.btn-primary {
+  padding: 9px 20px; background: var(--text-primary); color: var(--bg);
+  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+  font-family: var(--font); cursor: pointer; transition: all var(--transition);
+  display: flex; align-items: center; gap: 7px;
+}
+.btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); opacity: 1; }
+.btn-primary.loading { pointer-events: none; }
+.btn-primary.loading::after {
+  content: ''; width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+}
+
+/* FEED HEADER */
+.feed-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.feed-header h2 { font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-mono); }
+.refresh-btn {
+  display: flex; align-items: center; gap: 7px; padding: 7px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--text-secondary);
+  font-size: 13px; font-family: var(--font); cursor: pointer; transition: all var(--transition);
+}
+.refresh-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+.refresh-btn svg { width: 14px; height: 14px; }
+.refresh-btn.spinning svg { animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* POST CARDS */
+.post-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); margin-bottom: 16px; box-shadow: var(--shadow-sm);
+  overflow: hidden; transition: all var(--transition); animation: fadeUp 240ms ease both;
+  position: relative;
+}
+.post-card:hover { box-shadow: var(--shadow-md); border-color: var(--text-muted); transform: translateY(-1px); }
+.post-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 12px; }
+.post-author { display: flex; align-items: center; gap: 10px; }
+.post-author .handle { font-size: 13px; font-weight: 600; font-family: var(--font-mono); color: var(--text-primary); }
+.post-author .date { font-size: 12px; color: var(--text-muted); }
+.post-header-right { display: flex; align-items: center; gap: 8px; }
+.post-score { font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); background: var(--accent-soft); padding: 3px 8px; border-radius: 99px; border: 1px solid var(--border); }
+.post-delete-btn {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  border: 1px solid #fecaca; background: #fff5f5; color: #ef4444;
+  cursor: pointer; display: none; align-items: center; justify-content: center;
+  transition: all var(--transition); flex-shrink: 0;
+}
+.post-delete-btn:hover { background: #ef4444; color: white; border-color: #ef4444; }
+.post-delete-btn svg { width: 13px; height: 13px; }
+[data-theme="dark"] .post-delete-btn { background: #2a1a1a; border-color: #7f1d1d; }
+body.admin-mode .post-delete-btn { display: flex; }
+body.mod-mode .post-delete-btn { display: flex; }
+.post-text { padding: 0 18px 14px; font-size: 15px; color: var(--text-primary); line-height: 1.65; }
+.post-image { width: 100%; max-height: 420px; object-fit: cover; display: block; background: var(--border); }
+.post-actions {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 18px; border-top: 1px solid var(--border-soft);
+}
+.action-btn {
+  display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-secondary); font-size: 13px;
+  font-family: var(--font); cursor: pointer; transition: all var(--transition);
+}
+.action-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+.action-btn svg { width: 15px; height: 15px; }
+.action-btn.like-btn.liked { color: var(--like-active); border-color: var(--like-active); background: var(--like-bg); }
+.action-btn.like-btn:hover { color: var(--like-active); border-color: var(--like-active); background: var(--like-bg); }
+.like-count { font-weight: 600; }
+
+/* COMMENTS */
+.comments-section { display: none; border-top: 1px solid var(--border-soft); }
+.comments-section.open { display: block; }
+.comment-form {
+  padding: 14px 18px; display: flex; gap: 10px; border-bottom: 1px solid var(--border-soft);
+}
+.comment-input {
+  flex: 1; padding: 8px 14px; border: 1px solid var(--border);
+  border-radius: var(--radius-md); background: var(--bg); color: var(--text-primary);
+  font-family: var(--font); font-size: 14px; outline: none; transition: border-color var(--transition);
+}
+.comment-input:focus { border-color: var(--text-primary); }
+.comment-input::placeholder { color: var(--text-muted); }
+.comment-submit {
+  padding: 8px 16px; background: var(--text-primary); color: var(--bg);
+  border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600;
+  font-family: var(--font); cursor: pointer; transition: opacity var(--transition); white-space: nowrap;
+}
+.comment-submit:hover { opacity: 0.8; }
+.comments-list { padding: 8px 18px 14px; }
+.comment-item { padding: 10px 0; border-bottom: 1px solid var(--border-soft); }
+.comment-item:last-child { border-bottom: none; }
+.comment-row { display: flex; gap: 10px; }
+.comment-body { flex: 1; }
+.comment-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+.comment-handle { font-size: 12px; font-weight: 600; font-family: var(--font-mono); color: var(--text-primary); }
+.comment-date { font-size: 11px; color: var(--text-muted); }
+.comment-text { font-size: 14px; color: var(--text-secondary); line-height: 1.55; }
+.comment-actions { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.comment-like-btn, .reply-toggle-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; color: var(--text-muted); font-family: var(--font);
+  display: flex; align-items: center; gap: 4px; transition: color var(--transition); padding: 0;
+}
+.comment-like-btn:hover { color: var(--like-active); }
+.comment-like-btn.liked { color: var(--like-active); }
+.reply-toggle-btn:hover { color: var(--text-primary); }
+.comment-like-btn svg, .reply-toggle-btn svg { width: 12px; height: 12px; }
+.comment-delete-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; color: #ef4444; font-family: var(--font);
+  display: none; align-items: center; gap: 3px; padding: 0; transition: opacity var(--transition);
+}
+.comment-delete-btn:hover { opacity: 0.7; }
+.comment-delete-btn svg { width: 12px; height: 12px; }
+body.admin-mode .comment-delete-btn { display: flex; }
+.replies-section { margin-top: 8px; margin-left: 48px; }
+.reply-item { padding: 8px 0; border-left: 2px solid var(--border); padding-left: 12px; margin-bottom: 6px; }
+.reply-form { margin-top: 8px; display: flex; gap: 8px; }
+.reply-input {
+  flex: 1; padding: 6px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--text-primary); font-family: var(--font);
+  font-size: 13px; outline: none; transition: border-color var(--transition);
+}
+.reply-input:focus { border-color: var(--text-primary); }
+.reply-input::placeholder { color: var(--text-muted); }
+.reply-submit {
+  padding: 6px 12px; background: var(--text-primary); color: var(--bg);
+  border: none; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600;
+  font-family: var(--font); cursor: pointer; transition: opacity var(--transition);
+}
+.reply-submit:hover { opacity: 0.8; }
+
+/* SKELETON / EMPTY */
+.skeleton { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 20px; margin-bottom: 16px; }
+.skeleton-line { height: 14px; border-radius: 7px; background: var(--border); margin-bottom: 10px; animation: shimmer 1.4s ease infinite; }
+.skeleton-line.short { width: 40%; }
+.skeleton-line.medium { width: 70%; }
+@keyframes shimmer { 0%,100%{opacity:1} 50%{opacity:0.5} }
+.empty-state { text-align: center; padding: 60px 20px; }
+.empty-state svg { width: 48px; height: 48px; color: var(--text-muted); margin-bottom: 16px; }
+.empty-state h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.empty-state p { font-size: 14px; color: var(--text-muted); }
+
+/* ABOUT */
+.about-hero { text-align: center; padding: 40px 20px 32px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+.about-hero .logo-big { width: 64px; height: 64px; background: var(--text-primary); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 36px; }
+.about-hero h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 10px; }
+.about-hero p { font-size: 15px; color: var(--text-secondary); max-width: 420px; margin: 0 auto; line-height: 1.65; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.about-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); }
+.about-card .icon { width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--accent-soft); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.about-card .icon svg { width: 18px; height: 18px; color: var(--text-primary); }
+.about-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+.about-card p { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+.rules-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 24px; box-shadow: var(--shadow-sm); }
+.rules-card h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.rule-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-soft); }
+.rule-item:last-child { border-bottom: none; }
+.rule-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); flex-shrink: 0; }
+.rule-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.rule-text p { font-size: 13px; color: var(--text-muted); }
+.page-title { margin-bottom: 20px; }
+.page-title h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+.page-title p { font-size: 14px; color: var(--text-muted); }
+
+/* TOAST */
+.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { padding: 11px 18px; border-radius: var(--radius-md); background: var(--text-primary); color: var(--bg); font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg); animation: toastIn 240ms ease both; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.toast.out { animation: toastOut 200ms ease forwards; }
+.toast svg { width: 14px; height: 14px; }
+@keyframes toastIn { from{opacity:0;transform:translateY(8px) scale(0.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+@keyframes toastOut { to{opacity:0;transform:translateY(6px) scale(0.95)} }
+#imageInput { display: none; }
+
+/* MODAL (Admin şifre) */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 2000; display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none;
+  transition: opacity var(--transition); backdrop-filter: blur(4px);
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-xl); padding: 28px; width: 100%; max-width: 380px;
+  box-shadow: var(--shadow-lg); transform: scale(0.95) translateY(10px);
+  transition: transform 240ms ease;
+}
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+.modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.55; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; font-family: var(--font-mono); }
+.field input { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); color: var(--text-primary); font-family: var(--font-mono); font-size: 13px; outline: none; transition: border-color var(--transition); }
+.field input:focus { border-color: var(--text-primary); }
+.field input.error { border-color: #ef4444; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+.btn-secondary { padding: 9px 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text-secondary); font-size: 14px; font-family: var(--font); cursor: pointer; transition: all var(--transition); }
+.btn-secondary:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+/* ADMIN PANEL */
+.admin-banner {
+  background: linear-gradient(135deg, #7c3aed22, #7c3aed11);
+  border: 1px solid #7c3aed44;
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--admin-color);
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+.admin-banner svg { width: 16px; height: 16px; flex-shrink: 0; }
+body.admin-mode .admin-banner { display: flex; }
+.admin-logout-btn {
+  margin-left: auto; padding: 4px 10px; background: transparent;
+  border: 1px solid var(--admin-color); border-radius: var(--radius-sm);
+  color: var(--admin-color); font-size: 12px; font-family: var(--font);
+  cursor: pointer; transition: all var(--transition);
+}
+.admin-logout-btn:hover { background: var(--admin-color); color: white; }
+.admin-ann-btn {
+  padding: 4px 12px; background: transparent;
+  border: 1px solid var(--admin-color); border-radius: var(--radius-sm);
+  color: var(--admin-color); font-size: 12px; font-family: var(--font);
+  cursor: pointer; transition: all var(--transition); display: flex; align-items: center; gap: 5px;
+}
+.admin-ann-btn:hover { background: var(--admin-color); color: white; }
+
+/* PIN BUTTON */
+.post-pin-btn {
+  width: 28px; height: 28px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: transparent; color: var(--text-muted);
+  cursor: pointer; display: none; align-items: center; justify-content: center;
+  transition: all var(--transition); flex-shrink: 0;
+}
+.post-pin-btn:hover { background: #fef3c7; color: #d97706; border-color: #d97706; }
+.post-pin-btn.pinned { background: #fef3c7; color: #d97706; border-color: #d97706; }
+body.admin-mode .post-pin-btn { display: flex; }
+
+/* PINNED POST */
+.pinned-post { border-color: #d97706 !important; box-shadow: 0 0 0 1px #d9770633, var(--shadow-sm) !important; }
+.pinned-badge {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 14px; background: linear-gradient(90deg, #fef3c7, #fffbeb);
+  color: #92400e; font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  font-family: var(--font-mono); border-bottom: 1px solid #fde68a;
+}
+[data-theme="dark"] .pinned-badge { background: linear-gradient(90deg, #451a0388, #78350f33); color: #fbbf24; border-bottom-color: #78350f; }
+[data-theme="dark"] .pinned-post { border-color: #78350f !important; }
+
+/* ANNOUNCEMENT CARDS */
+.announcement-card {
+  background: linear-gradient(135deg, #1a0000 0%, #2d0a0a 40%, #1a0000 100%);
+  border: 1px solid #dc2626aa;
+  border-radius: var(--radius-xl);
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(220,38,38,0.15), var(--shadow-sm);
+  animation: fadeUp 240ms ease both;
+  position: relative;
+}
+.announcement-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, #dc2626, #7f1d1d, #dc2626);
+}
+.ann-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px 8px;
+}
+.ann-icon { font-size: 16px; }
+.ann-label { font-size: 12px; font-weight: 700; color: #f87171; letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--font-mono); }
+.ann-date { font-size: 11px; color: #7f1d1d; font-family: var(--font-mono); margin-left: auto; }
+.ann-delete-btn {
+  background: transparent; border: 1px solid #7f1d1d; border-radius: 6px;
+  color: #f87171; cursor: pointer; padding: 3px 6px; transition: all var(--transition);
+  display: flex; align-items: center;
+}
+.ann-delete-btn:hover { background: #dc2626; color: white; border-color: #dc2626; }
+.ann-text {
+  padding: 4px 16px 16px;
+  font-size: 14px; color: #fecaca; line-height: 1.65; font-weight: 500;
+}
+
+/* SYNC STATUS BAR */
+.sync-status {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);
+  padding: 6px 0; margin-bottom: 12px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 540px) {
+  .about-grid { grid-template-columns: 1fr; }
+  .nav-center { display: none; }
+  .navbar { padding: 0 16px; }
+  .main { padding-left: 12px; padding-right: 12px; }
+  .sidebar { width: 260px; }
+}
+
+/* ── Çoklu görsel önizleme ── */
+.compose-images-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.compose-img-thumb { position: relative; width: calc(50% - 4px); border-radius: var(--radius-md); overflow: hidden; }
+.compose-img-thumb img { width: 100%; height: 120px; object-fit: cover; display: block; }
+.compose-img-thumb .remove-img-btn {
+  position: absolute; top: 4px; right: 4px;
+  background: rgba(0,0,0,0.65); border: none; border-radius: 50%;
+  width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: #fff;
+}
+.compose-img-thumb .remove-img-btn svg { width: 12px; height: 12px; }
+
+/* ── Post kolaj ── */
+.post-images { display: grid; gap: 3px; width: 100%; }
+.post-images.count-1 { grid-template-columns: 1fr; }
+.post-images.count-2 { grid-template-columns: 1fr 1fr; }
+.post-images.count-3 { grid-template-columns: 1fr 1fr; }
+.post-images.count-3 .post-img:first-child { grid-column: 1 / -1; }
+.post-images.count-4 { grid-template-columns: 1fr 1fr; }
+.post-img { width: 100%; object-fit: cover; display: block; background: var(--border); cursor: pointer; }
+.post-images.count-1 .post-img { max-height: 420px; }
+.post-images.count-2 .post-img { height: 220px; }
+.post-images.count-3 .post-img { height: 200px; }
+.post-images.count-3 .post-img:first-child { height: 260px; }
+.post-images.count-4 .post-img { height: 180px; }
+
+/* ── Mod badge ── */
+.mod-badge { display: inline-block; font-size: 10px; font-weight: 600; background: #2563eb; color: #fff; border-radius: 4px; padding: 1px 6px; margin-left: 4px; vertical-align: middle; letter-spacing: .5px; }
+.mod-announcement { 
+  border-left: 3px solid #2563eb !important; 
+  background: linear-gradient(135deg, #eff6ff, #dbeafe) !important;
+}
+[data-theme="dark"] .mod-announcement { 
+  background: linear-gradient(135deg, #1e3a5f22, #1e40af33) !important; 
+}
+.mod-announcement .ann-text { color: #1e40af !important; }
+[data-theme="dark"] .mod-announcement .ann-text { color: #93c5fd !important; }
+.mod-comment-text { color: #1d4ed8 !important; font-weight: 500; }
+[data-theme="dark"] .mod-comment-text { color: #60a5fa !important; }
+
+/* ── Key modal sayfası ── */
+.key-page { padding: 24px 16px; max-width: 480px; margin: 0 auto; }
+.key-page h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.key-page .subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+.key-perms { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.key-perm-row { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; cursor: pointer; }
+.key-perm-row input[type=checkbox] { width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; }
+.key-perm-row label { font-size: 14px; cursor: pointer; flex: 1; }
+.key-duration { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.key-dur-btn { padding: 8px 14px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--surface); font-size: 13px; cursor: pointer; color: var(--text-primary); transition: var(--transition); }
+.key-dur-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+.key-result { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; margin-top: 16px; word-break: break-all; font-family: var(--font-mono); font-size: 13px; display: none; }
+.key-result .key-val { color: #2563eb; font-weight: 600; }
+
+/* ── Mod key giriş alanı (sidebar alt) ── */
+.mod-key-entry { padding: 12px 16px; border-top: 1px solid var(--border); }
+.mod-key-entry input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg); color: var(--text-primary); font-size: 13px; margin-bottom: 8px; box-sizing: border-box; }
+.mod-key-entry button { width: 100%; padding: 8px; border-radius: var(--radius-md); border: none; background: #2563eb; color: #fff; font-size: 13px; cursor: pointer; font-weight: 500; }
+.mod-active-badge { background: #2563eb; color: #fff; border-radius: var(--radius-md); padding: 6px 10px; font-size: 12px; text-align: center; }
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo" onclick="navigateTo('home')">
+    <div class="logo-mark">🔍</div>
+    <span class="nav-title">Avakin Share</span>
+  </div>
+  <div class="nav-center">anonim · açık · özgür</div>
+  <div class="nav-actions">
+    <button class="btn-icon" onclick="toggleTheme()" title="Tema Değiştir">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+    </button>
+    <button class="btn-icon" onclick="openSidebar()" title="Menü">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h3>Menü</h3>
+    <button class="btn-icon" onclick="closeSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-page="home" onclick="navigateTo('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      Ana Sayfa
+    </button>
+    <button class="nav-item" data-page="explore" onclick="navigateTo('explore')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Keşfet
+    </button>
+    <button class="nav-item" data-page="top" onclick="navigateTo('top')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      En Beğenilenler
+    </button>
+    <button class="nav-item" data-page="new" onclick="navigateTo('new')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      Yeni Gönderiler
+    </button>
+    <button class="nav-item" data-page="about" onclick="navigateTo('about')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Hakkında
+    </button>
+    <!-- ADMIN ITEM -->
+    <button class="nav-item admin-item" onclick="openAdminModal()">
+      🔧 Admin Panel
+    </button>
+    <button class="nav-item" id="modKeyNavBtn" onclick="navigateTo('modkey')" style="display:none">
+      🛡️ Mod Key Oluştur
+    </button>
+  </nav>
+  <div class="mod-key-entry" id="modKeyEntry">
+    <div id="modActiveBadge" style="display:none" class="mod-active-badge">🛡️ Mod aktif — <span id="modKeyExpiry"></span></div>
+    <input type="text" id="modKeyInput" placeholder="Mod key gir..." style="">
+    <button onclick="activateModKey()">Aktifleştir</button>
+  </div>
+  <div class="sidebar-footer">
+    <div class="anon-badge">
+      <div class="anon-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div class="anon-info">
+        <p id="sidebarAnonId">Anon-0000</p>
+        <span>Anonim kimliğin</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- MOD KEY PAGE -->
+  <section class="page" id="page-modkey">
+    <div class="key-page">
+      <h2>🛡️ Mod Key Oluştur</h2>
+      <p class="subtitle">Oluşturulan key belirlenen süre boyunca geçerli olur.</p>
+      <div class="key-perms">
+        <div class="key-perm-row"><input type="checkbox" id="perm-deletePost"><label for="perm-deletePost">Post Sil</label></div>
+        <div class="key-perm-row"><input type="checkbox" id="perm-addAnn"><label for="perm-addAnn">Duyuru Ekle</label></div>
+        <div class="key-perm-row"><input type="checkbox" id="perm-pinPost"><label for="perm-pinPost">Post Sabitle</label></div>
+        <div class="key-perm-row"><input type="checkbox" id="perm-deleteAnn"><label for="perm-deleteAnn">Duyuru Sil</label></div>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">Süre gir <span style="color:var(--text-muted);font-size:11px">(örn: 30d, 12s, 7g, 2a, 1yıl)</span></p>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:20px">
+        <input id="keyDurationInput" type="text" placeholder="örn: 1g" value="1g"
+          style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text-primary);font-size:14px;font-family:var(--font-mono)">
+        <div id="keyDurationLabel" style="font-size:12px;color:#2563eb;min-width:80px;text-align:right">1 Gün</div>
+      </div>
+      <button class="btn-primary" style="width:100%;margin-top:4px" onclick="generateModKey()">Key Oluştur</button>
+      <div class="key-result" id="keyResult">
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:6px">Oluşturulan Key:</p>
+        <div class="key-val" id="keyVal"></div>
+        <button onclick="copyModKey()" style="margin-top:10px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text-primary);cursor:pointer;font-size:12px">Kopyala</button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- HOME -->
+  <section class="page active" id="page-home">
+    <div class="admin-banner" id="adminBanner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span id="bannerText">Admin modu aktif</span>
+      <button class="admin-ann-btn" id="bannerAnnBtn" onclick="openAnnouncementModal()" style="display:none">
+        📢 Duyuru At
+      </button>
+      <button class="admin-logout-btn" onclick="adminLogout()">Çıkış</button>
+    </div>
+    <div class="admin-banner" id="modBanner" style="display:none;background:linear-gradient(135deg,#1e3a5f,#1e40af)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Moderatör modu aktif</span>
+      <button class="admin-ann-btn" id="modAnnBtn" onclick="openAnnouncementModal()" style="display:none">
+        📢 Duyuru At
+      </button>
+    </div>
+
+    <div id="announcementsContainer"></div>
+
+    <div class="compose-card">
+      <div class="compose-header">
+        <div class="avatar" id="composeAvatar">AN</div>
+        <div class="compose-meta">
+          <div class="handle" id="composeHandle">Anon-0000</div>
+          <div class="subtitle">Anonim paylaşım</div>
+        </div>
+      </div>
+      <textarea class="compose-textarea" id="postText" placeholder="Ne düşünüyorsun? Avakin dünyandan bir şey paylaş..." rows="3"></textarea>
+      <div class="compose-images-preview" id="imagesPreview"></div>
+      <div class="compose-actions">
+        <div class="compose-tools">
+          <button class="tool-btn" onclick="document.getElementById('imageInput').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+            Görsel
+          </button>
+        </div>
+        <button class="btn-primary" id="shareBtn" onclick="submitPost()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:15px;height:15px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+          Paylaş
+        </button>
+      </div>
+      <input type="file" id="imageInput" accept="image/*" multiple onchange="handleImageSelect(event)">
+    </div>
+
+    <div class="feed-header">
+      <h2 id="feedLabel">Feed</h2>
+      <button class="refresh-btn" id="refreshBtn" onclick="loadPosts(true)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+        </svg>
+        Yenile
+      </button>
+    </div>
+    <div id="feedContainer"></div>
+  </section>
+
+  <!-- EXPLORE -->
+  <section class="page" id="page-explore">
+    <div class="page-title"><h2>Keşfet</h2><p>Tüm anonim paylaşımları keşfet</p></div>
+    <div id="exploreContainer"></div>
+  </section>
+
+  <!-- TOP -->
+  <section class="page" id="page-top">
+    <div class="page-title"><h2>En Beğenilenler</h2><p>Toplulukça en çok beğenilen paylaşımlar</p></div>
+    <div id="topContainer"></div>
+  </section>
+
+  <!-- NEW -->
+  <section class="page" id="page-new">
+    <div class="page-title"><h2>Yeni Gönderiler</h2><p>En son eklenen paylaşımlar</p></div>
+    <div id="newContainer"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="page" id="page-about">
+    <div class="about-hero">
+      <div class="logo-big">🔍</div>
+      <h1>Avakin Share</h1>
+      <p>Anonim, özgür ve dürüst bir sosyal paylaşım platformu. Avakin Life evreninden paylaşımlar, sıfır kimlik kaygısıyla.</p>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <h3>Tam Anonimlik</h3><p>Gerçek kimliğin asla bilinmez. Sistem sana otomatik bir Anon ID verir.</p>
+      </div>
+      <div class="about-card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Güvenli Alan</h3><p>Saygı çerçevesinde paylaşmak için tasarlanmış güvenli bir topluluk.</p>
+      </div>
+      <div class="about-card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg></div>
+        <h3>Görsel Paylaşım</h3><p>Outfit'ini, ekran görüntünü, favori anını toplulukla paylaş.</p>
+      </div>
+      <div class="about-card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+        <h3>Canlı Feed</h3><p>Her 3 dakikada otomatik güncelleme. Topluluk hareketlenir, sen de hisset.</p>
+      </div>
+    </div>
+    <div class="rules-card">
+      <h2>Topluluk Kuralları</h2>
+      <div class="rule-item"><div class="rule-num">1</div><div class="rule-text"><h4>Saygı zorunlu</h4><p>Herhangi bir kullanıcıyı hedef alan hakaret, tehdit veya taciz yasaktır.</p></div></div>
+      <div class="rule-item"><div class="rule-num">2</div><div class="rule-text"><h4>Gerçek kimlik paylaşma</h4><p>Ne kendi kimliğini ne de başkalarının kimliğini ifşa et.</p></div></div>
+      <div class="rule-item"><div class="rule-num">3</div><div class="rule-text"><h4>Oyunla ilgili içerik</h4><p>Platform Avakin Life topluluğu içindir. Alakasız içerik paylaşma.</p></div></div>
+      <div class="rule-item"><div class="rule-num">4</div><div class="rule-text"><h4>Spam yok</h4><p>Aynı içeriği tekrar tekrar paylaşmak veya bot davranışı yasaktır.</p></div></div>
+    </div>
+  </section>
+</main>
+
+<!-- ADMIN MODAL -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal">
+    <h2>🔧 Admin Girişi</h2>
+    <p>Admin panelini açmak için şifreyi gir.</p>
+    <div class="field">
+      <label>Şifre</label>
+      <input type="password" id="adminPasswordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPassword()">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAdminModal()">Vazgeç</button>
+      <button class="btn-primary" onclick="checkAdminPassword()">Giriş</button>
+    </div>
+  </div>
+</div>
+
+<!-- DUYURU MODAL -->
+<div class="modal-overlay" id="announcementModal">
+  <div class="modal">
+    <h2>📢 Duyuru Yayınla</h2>
+    <p>Bu duyuru tüm kullanıcılara feed'in üstünde gösterilecek.</p>
+    <div class="field">
+      <label>Duyuru Metni</label>
+      <textarea id="annText" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--bg);color:var(--text-primary);font-family:var(--font);font-size:14px;outline:none;resize:vertical;min-height:100px;line-height:1.6;transition:border-color var(--transition)" placeholder="Duyuruyu buraya yaz..." onkeydown="if(event.key==='Enter'&&event.ctrlKey)submitAnnouncement()"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAnnouncementModal()">Vazgeç</button>
+      <button class="btn-primary" onclick="submitAnnouncement()">Yayınla</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   UTF-8 HELPERS — Türkçe karakter desteği
+   ============================================================ */
+function utfToBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
+}
+function base64ToUtf(b64) {
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+/* ============================================================
+   CONFIG — sabit GitHub bilgileri
+   ============================================================ */
+const GH_USER  = 'ForsDev101';
+const GH_REPO  = 'osste';
+// Token burada YOK — Cloudflare Worker'da güvenle saklanır
+const WORKER_URL         = 'https://avakinifsa.homehomenyt.workers.dev/'; // ← Cloudflare'den kopyala
+const POSTS_FILE         = 'posts.json';
+const COMMENTS_FILE      = 'comments.json';
+const ANNOUNCEMENTS_FILE = 'announcements.json';
+const ADMIN_PASS    = 'Fors1959';
+const AUTO_SYNC_MS  = 3 * 60 * 1000; // 3 dakika
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let posts = [];
+let announcements = [];
+let myAnonId = '';
+let currentPage = 'home';
+let selectedImages = []; // array of base64
+let selectedImageBase64 = null; // legacy compat
+let isAdminMode = false;
+let autoSyncInterval = null;
+let fileSHAs = {};   // { 'posts.json': 'sha...', 'comments.json': 'sha...' }
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(async function init() {
+  // Anon ID
+  myAnonId = localStorage.getItem('anonId');
+  if (!myAnonId) {
+    myAnonId = 'Anon-' + (Math.floor(Math.random() * 9000) + 1000);
+    localStorage.setItem('anonId', myAnonId);
+  }
+
+  // Theme
+  setTheme(localStorage.getItem('theme') || 'light');
+
+  // UI
+  document.getElementById('composeHandle').textContent = myAnonId;
+  document.getElementById('sidebarAnonId').textContent = myAnonId;
+  document.getElementById('composeAvatar').textContent = myAnonId.split('-')[1]?.slice(0,2) || 'AN';
+
+  // Ensure JSON files exist in repo, then load
+  await ensureFiles();
+  await loadPosts(true);
+
+  // Auto sync her 3 dakikada
+  autoSyncInterval = setInterval(() => loadPosts(false), AUTO_SYNC_MS);
+})();
+
+/* ============================================================
+   GITHUB API HELPERS — Cloudflare Worker üzerinden
+   Token sitede YOK, Worker'da güvenle saklanır
+   ============================================================ */
+function ghApiUrl(file) {
+  const target = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${file}`;
+  return `${WORKER_URL}/proxy?url=${encodeURIComponent(target)}`;
+}
+
+async function ghGet(file) {
+  try {
+    const r = await fetch(ghApiUrl(file));
+    if (r.status === 404) return '__NOT_FOUND__';
+    if (!r.ok) return null; // network/server error
+    const d = await r.json();
+    fileSHAs[file] = d.sha;
+    const parsed = base64ToUtf(d.content.replace(/\n/g,''));
+    return JSON.parse(parsed);
+  } catch { return null; }
+}
+
+async function ghPut(file, data, message) {
+  setSyncDot('syncing');
+  try {
+    // Step 1: Get fresh SHA (only if not already cached from recent ghGet)
+    if (!fileSHAs[file]) {
+      const getR = await fetch(ghApiUrl(file));
+      const getD = await getR.json();
+      if (getD.sha) fileSHAs[file] = getD.sha;
+    }
+
+    // Step 2: Build body
+    const body = {
+      message: message || `Update ${file}`,
+      content: utfToBase64(JSON.stringify(data, null, 2)),
+    };
+    if (fileSHAs[file]) body.sha = fileSHAs[file]; // yeni dosyada sha olmamalı
+
+    // Step 3: PUT
+    const putR = await fetch(ghApiUrl(file), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const putD = await putR.json();
+
+    if (putR.ok) {
+      if (putD.content?.sha) fileSHAs[file] = putD.content.sha;
+      setSyncDot('ok');
+      return true;
+    }
+
+    // Step 4: If conflict, retry once
+    if (putR.status === 409 || putR.status === 422 || putR.status === 412) {
+      const getR2 = await fetch(ghApiUrl(file));
+      const getD2 = await getR2.json();
+      if (getD2.sha) { fileSHAs[file] = getD2.sha; body.sha = getD2.sha; }
+      const putR2 = await fetch(ghApiUrl(file), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const putD2 = await putR2.json();
+      if (putR2.ok) {
+        if (putD2.content?.sha) fileSHAs[file] = putD2.content.sha;
+        setSyncDot('ok');
+        return true;
+      }
+    }
+
+    console.error('ghPut failed', putR.status, JSON.stringify(putD));
+    setSyncDot('error');
+    return false;
+  } catch(e) {
+    console.error('ghPut exception', e);
+    setSyncDot('error');
+    return false;
+  }
+}
+
+async function ensureFiles() {
+  // Only create files confirmed 404 — never touch existing files
+  const [p, c, a] = await Promise.all([
+    ghGet(POSTS_FILE),
+    ghGet(COMMENTS_FILE),
+    ghGet(ANNOUNCEMENTS_FILE)
+  ]);
+  if (p === '__NOT_FOUND__') await ghPut(POSTS_FILE, [], 'Init posts.json');
+  if (c === '__NOT_FOUND__') await ghPut(COMMENTS_FILE, {}, 'Init comments.json');
+  if (a === '__NOT_FOUND__') await ghPut(ANNOUNCEMENTS_FILE, [], 'Init announcements.json');
+  const k = await ghGet('keys.json');
+  if (k === '__NOT_FOUND__') await ghPut('keys.json', [], 'Init keys.json');
+}
+
+/* ============================================================
+   SYNC DOT & STATUS
+   ============================================================ */
+function setSyncDot(state) { /* silent */ }
+
+/* ============================================================
+   LOAD & SAVE POSTS
+   ============================================================ */
+async function loadPosts(showSkeleton = false) {
+  const btn = document.getElementById('refreshBtn');
+  btn?.classList.add('spinning');
+  if (showSkeleton) { const fc = document.getElementById('feedContainer'); if(fc) fc.innerHTML = '<div style="padding:32px 0;text-align:center;color:var(--text-muted);font-size:14px">Postlar yükleniyor...</div>'; }
+  setSyncDot('syncing');
+
+  const [loadedPosts, loadedAnn] = await Promise.all([
+    ghGet(POSTS_FILE),
+    ghGet(ANNOUNCEMENTS_FILE)
+  ]);
+
+  if (Array.isArray(loadedPosts)) {
+    posts = loadedPosts;
+  }
+  // If null (network error) keep whatever is in memory already
+
+  if (Array.isArray(loadedAnn)) {
+    announcements = loadedAnn;
+  }
+
+  renderAnnouncements();
+  renderFeed(getSortedPosts(), 'feedContainer');
+  renderPage(currentPage);
+  btn?.classList.remove('spinning');
+}
+
+async function savePosts(message) {
+  const ok = await ghPut(POSTS_FILE, posts, message || 'Update posts');
+  return ok;
+}
+
+/* ============================================================
+   THEME
+   ============================================================ */
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('theme', t);
+  const icon = document.getElementById('themeIcon');
+  if (t === 'dark') {
+    icon.innerHTML = `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>`;
+  } else {
+    icon.innerHTML = `<circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" fill="none"/>`;
+  }
+}
+function toggleTheme() {
+  setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function navigateTo(page) {
+  if (page === 'modkey' && !isAdminMode) return;
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page)?.classList.add('active');
+  document.querySelectorAll('.nav-item[data-page]').forEach(i => {
+    i.classList.toggle('active', i.dataset.page === page);
+  });
+  closeSidebar();
+  renderPage(page);
+}
+function renderPage(page) {
+  const sorted = getSortedPosts();
+  if (page === 'explore') renderFeed(sorted, 'exploreContainer');
+  if (page === 'top') {
+    renderFeed([...posts].sort((a,b) => (b.likes+b.comments.length)-(a.likes+a.comments.length)), 'topContainer');
+  }
+  if (page === 'new') {
+    renderFeed([...posts].sort((a,b) => new Date(b.date)-new Date(a.date)), 'newContainer');
+  }
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+function openAdminModal() {
+  closeSidebar();
+  if (isAdminMode) { adminLogout(); return; }
+  document.getElementById('adminPasswordInput').value = '';
+  document.getElementById('adminPasswordInput').classList.remove('error');
+  document.getElementById('adminModal').classList.add('open');
+}
+function closeAdminModal() {
+  document.getElementById('adminModal').classList.remove('open');
+}
+function checkAdminPassword() {
+  const val = document.getElementById('adminPasswordInput').value;
+  if (val === ADMIN_PASS) {
+    isAdminMode = true;
+    document.getElementById('modKeyNavBtn').style.display = '';
+    document.getElementById('adminBanner').style.display = '';
+    document.getElementById('bannerAnnBtn').style.display = '';
+    document.body.classList.add('admin-mode');
+    closeAdminModal();
+    showToast('Admin modu aktif 🔧', 'check');
+    renderFeed(getSortedPosts(), 'feedContainer');
+    renderPage(currentPage);
+  } else {
+    document.getElementById('adminPasswordInput').classList.add('error');
+    showToast('Yanlış şifre!', 'warn');
+  }
+}
+function adminLogout() {
+  isAdminMode = false;
+  document.getElementById('modKeyNavBtn').style.display = 'none';
+  document.getElementById('adminBanner').style.display = 'none';
+  document.getElementById('bannerAnnBtn').style.display = 'none';
+  document.body.classList.remove('admin-mode');
+  showToast('Admin modundan çıkıldı', 'info');
+  renderAnnouncements();
+  renderFeed(getSortedPosts(), 'feedContainer');
+  renderPage(currentPage);
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function getSortedPosts() {
+  return [...posts].sort((a,b) => {
+    // Sabitlenmiş postlar her zaman en üstte
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    const d = (b.likes+b.comments.length)-(a.likes+a.comments.length);
+    if (d !== 0) return d;
+    return new Date(b.date)-new Date(a.date);
+  });
+}
+function showSkeletonFn(id) {
+  const c = document.getElementById(id); if(!c) return;
+  c.innerHTML = Array(3).fill(0).map(()=>`
+    <div class="skeleton">
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <div class="skeleton-line" style="width:38px;height:38px;border-radius:50%;flex-shrink:0;margin-bottom:0"></div>
+        <div style="flex:1">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line" style="width:20%"></div>
+        </div>
+      </div>
+      <div class="skeleton-line medium"></div>
+      <div class="skeleton-line"></div>
+    </div>`).join('');
+}
+function renderFeed(arr, id) {
+  const c = document.getElementById(id); if(!c) return;
+  if (!arr.length) {
+    c.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+      <h3>Henüz gönderi yok</h3><p>İlk paylaşımı sen yap!</p></div>`;
+    return;
+  }
+  c.innerHTML = arr.map(p => renderPostCard(p)).join('');
+}
+
+function renderPostCard(p) {
+  const score = p.likes + p.comments.length;
+  const myLike = getLiked('post', p.id);
+  return `
+    <div class="post-card${p.pinned ? ' pinned-post' : ''}" id="post-${p.id}">
+      ${p.pinned ? `<div class="pinned-badge"><svg viewBox="0 0 24 24" fill="currentColor" style="width:11px;height:11px"><path d="M16 2v4l2 2v2h-5v7l-1 3-1-3V10H6V8l2-2V2z"/></svg>Sabitlenmiş</div>` : ''}
+      <div class="post-header">
+        <div class="post-author">
+          <div class="avatar">${p.anonId.split('-')[1]?.slice(0,2)||'AN'}</div>
+          <div>
+            <div class="handle">${p.anonId}</div>
+            <div class="date">${timeAgo(p.date)}</div>
+          </div>
+        </div>
+        <div class="post-header-right">
+          <div class="post-score">✦ ${score}</div>
+          <button class="post-pin-btn${p.pinned ? ' pinned' : ''}" onclick="togglePinPost(${p.id})" title="${p.pinned ? 'Sabitlemeyi Kaldır' : 'Sabitle'}">
+            <svg viewBox="0 0 24 24" fill="${p.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px"><path d="M16 2v4l2 2v2h-5v7l-1 3-1-3V10H6V8l2-2V2z"/></svg>
+          </button>
+          <button class="post-delete-btn" onclick="deletePost(${p.id})" title="Postu Sil">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+      ${p.text ? `<div class="post-text">${escHtml(p.text)}</div>` : ''}
+      ${(p.images && p.images.length) ? renderPostImages(p.images) : (p.image ? `<div class="post-images count-1"><img class="post-img" src="${p.image}" loading="lazy"></div>` : '')}
+      <div class="post-actions">
+        <button class="action-btn like-btn ${myLike?'liked':''}" onclick="likePost(${p.id}, this)">
+          <svg viewBox="0 0 24 24" fill="${myLike?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          <span class="like-count">${p.likes}</span>
+        </button>
+        <button class="action-btn" onclick="toggleComments(${p.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          ${p.comments.length}
+        </button>
+      </div>
+      <div class="comments-section" id="comments-${p.id}">
+        <div class="comment-form">
+          <input class="comment-input" type="text" placeholder="Yorum yaz..." id="commentInput-${p.id}" onkeydown="if(event.key==='Enter')addComment(${p.id})">
+          <button class="comment-submit" onclick="addComment(${p.id})">Gönder</button>
+        </div>
+        <div class="comments-list" id="commentsList-${p.id}">
+          ${renderComments(p.comments, p.id)}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderComments(comments, postId) {
+  if (!comments.length) return '<div style="padding:8px 0;font-size:13px;color:var(--text-muted)">Henüz yorum yok.</div>';
+  const sorted = [...comments].sort((a,b) => b.likes - a.likes);
+  return sorted.map((c,i) => renderComment(c, i, postId)).join('');
+}
+
+function renderComment(c, idx, postId) {
+  const myLike = getLiked(`comment-${postId}-${idx}`, 0);
+  return `
+    <div class="comment-item" id="commentItem-${postId}-${idx}">
+      <div class="comment-row">
+        <div class="avatar" style="width:30px;height:30px;font-size:11px;flex-shrink:0;${c.byMod?'background:#2563eb;color:#fff':''}">${c.byMod?'MO':c.anonId.split('-')[1]?.slice(0,2)||'AN'}</div>
+        <div class="comment-body">
+          <div class="comment-meta">
+            <span class="comment-handle" style="${c.byMod?'color:#2563eb;font-weight:600':''}">${c.byMod?'MODERATOR':c.anonId}</span>
+            <span class="comment-date">${timeAgo(c.date)}</span>
+          </div>
+          <div class="comment-text">${escHtml(c.text)}</div>
+          <div class="comment-actions">
+            <button class="comment-like-btn ${myLike?'liked':''}" onclick="likeComment(${postId},${idx},this)">
+              <svg viewBox="0 0 24 24" fill="${myLike?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              ${c.likes}
+            </button>
+            <button class="reply-toggle-btn" onclick="toggleReplyForm(${postId},${idx})">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9,17 4,12 9,7"/><path d="M20,18v-2a4 4 0 00-4-4H4"/></svg>
+              Yanıtla
+            </button>
+            <button class="comment-delete-btn" onclick="deleteComment(${postId},${idx})">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+              Sil
+            </button>
+          </div>
+          ${c.replies && c.replies.length ? `
+            <div class="replies-section">
+              ${c.replies.map((r,ri) => `
+                <div class="reply-item">
+                  <div class="comment-meta"><span class="comment-handle">${r.anonId}</span><span class="comment-date">${timeAgo(r.date)}</span></div>
+                  <div class="comment-text">${escHtml(r.text)}</div>
+                </div>`).join('')}
+            </div>` : ''}
+          <div class="replies-section" id="replyForm-${postId}-${idx}" style="display:none">
+            <div class="reply-form">
+              <input class="reply-input" type="text" placeholder="Yanıtını yaz..." id="replyInput-${postId}-${idx}" onkeydown="if(event.key==='Enter')addReply(${postId},${idx})">
+              <button class="reply-submit" onclick="addReply(${postId},${idx})">Gönder</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ============================================================
+   INTERACTIONS
+   ============================================================ */
+function toggleComments(postId) {
+  document.getElementById('comments-'+postId)?.classList.toggle('open');
+}
+function toggleReplyForm(postId, idx) {
+  const f = document.getElementById(`replyForm-${postId}-${idx}`);
+  if (!f) return;
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  if (f.style.display === 'block') f.querySelector('input')?.focus();
+}
+
+async function likePost(postId, btn) {
+  if (getLiked('post', postId)) return;
+  setLiked('post', postId);
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  post.likes++;
+  btn.classList.add('liked');
+  btn.querySelector('svg').setAttribute('fill','currentColor');
+  btn.querySelector('.like-count').textContent = post.likes;
+  await savePosts('Like post ' + postId);
+}
+
+async function likeComment(postId, commentIdx, btn) {
+  const key = `comment-${postId}-${commentIdx}`;
+  if (getLiked(key, 0)) return;
+  setLiked(key, 0);
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  const sorted = [...post.comments].sort((a,b) => b.likes - a.likes);
+  const comment = sorted[commentIdx];
+  if (!comment) return;
+  comment.likes++;
+  btn.classList.add('liked');
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>${comment.likes}`;
+  await savePosts('Like comment');
+}
+
+async function addComment(postId) {
+  const input = document.getElementById('commentInput-'+postId);
+  const text = input.value.trim();
+  if (!text) { input.focus(); return; }
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  post.comments.push({ anonId: myAnonId, text, likes: 0, date: new Date().toISOString(), replies: [] });
+  input.value = '';
+  document.getElementById('commentsList-'+postId).innerHTML = renderComments(post.comments, postId);
+  const ok = await savePosts('Add comment to post ' + postId);
+  showToast('Yorum eklendi', 'check');
+}
+
+async function addReply(postId, commentIdx) {
+  const input = document.getElementById(`replyInput-${postId}-${commentIdx}`);
+  const text = input.value.trim();
+  if (!text) return;
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  const sorted = [...post.comments].sort((a,b) => b.likes - a.likes);
+  const comment = sorted[commentIdx];
+  if (!comment) return;
+  if (!comment.replies) comment.replies = [];
+  comment.replies.push({ anonId: myAnonId, text, likes: 0, date: new Date().toISOString() });
+  input.value = '';
+  document.getElementById('commentsList-'+postId).innerHTML = renderComments(post.comments, postId);
+  await savePosts('Add reply');
+  showToast('Yanıt eklendi', 'check');
+}
+
+/* ============================================================
+   ADMIN ACTIONS
+   ============================================================ */
+async function deletePost(postId) {
+  if (!isAdminMode && !hasPerm('deletePost')) return;
+  if (!confirm('Bu postu silmek istediğine emin misin?')) return;
+  posts = posts.filter(p => p.id !== postId);
+  document.getElementById('post-'+postId)?.remove();
+  const ok = await savePosts('Admin: delete post ' + postId);
+  showToast('Post silindi', 'check');
+  renderPage(currentPage);
+}
+
+async function togglePinPost(postId) {
+  if (!isAdminMode) return;
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  post.pinned = !post.pinned;
+  const ok = await savePosts('Admin: ' + (post.pinned ? 'pin' : 'unpin') + ' post ' + postId);
+  showToast(post.pinned ? '📌 Post sabitlendi' : 'Sabitleme kaldırıldı', 'check');
+  renderFeed(getSortedPosts(), 'feedContainer');
+  renderPage(currentPage);
+}
+
+function openAnnouncementModal() {
+  if (!isAdminMode && !hasPerm('addAnn')) return;
+  document.getElementById('annText').value = '';
+  document.getElementById('announcementModal').classList.add('open');
+  setTimeout(() => document.getElementById('annText').focus(), 100);
+}
+function closeAnnouncementModal() {
+  document.getElementById('announcementModal').classList.remove('open');
+}
+
+async function submitAnnouncement() {
+  const text = document.getElementById('annText').value.trim();
+  if (!text) { showToast('Duyuru metni boş olamaz', 'warn'); return; }
+  const ann = { id: Date.now(), text, date: new Date().toISOString() };
+  announcements.unshift(ann);
+  const ok = await ghPut(ANNOUNCEMENTS_FILE, announcements, 'Admin: new announcement');
+  closeAnnouncementModal();
+  renderAnnouncements();
+  showToast('📢 Duyuru yayınlandı', 'check');
+}
+
+async function deleteAnnouncement(annId) {
+  if (!isAdminMode && !hasPerm('deleteAnn')) return;
+  if (!confirm('Bu duyuruyu silmek istediğine emin misin?')) return;
+  // Convert to same type for comparison (onclick passes string, id stored as number)
+  announcements = announcements.filter(a => String(a.id) !== String(annId));
+  renderAnnouncements();
+  const ok = await ghPut(ANNOUNCEMENTS_FILE, announcements, 'Admin: delete announcement');
+  showToast('Duyuru silindi', 'check');
+}
+
+function renderAnnouncements() {
+  const container = document.getElementById('announcementsContainer');
+  if (!container) return;
+  if (!announcements.length) { container.innerHTML = ''; return; }
+  container.innerHTML = announcements.map(a => `
+    <div class="announcement-card" id="ann-${a.id}">
+      <div class="ann-header">
+        <span class="ann-icon">📢</span>
+        <span class="ann-label">Duyuru</span>
+        <span class="ann-date">${timeAgo(a.date)}</span>
+        ${(isAdminMode || hasPerm('deleteAnn')) ? `<button class="ann-delete-btn" onclick="deleteAnnouncement(${a.id})" title="Duyuruyu Sil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>` : ''}
+      </div>
+      <div class="ann-text">${escHtml(a.text)}</div>
+    </div>`).join('');
+}
+
+async function deleteComment(postId, commentIdx) {
+  if (!isAdminMode) return;
+  if (!confirm('Bu yorumu silmek istediğine emin misin?')) return;
+  const post = posts.find(p => p.id === postId);
+  if (!post) return;
+  const sorted = [...post.comments].sort((a,b) => b.likes - a.likes);
+  const comment = sorted[commentIdx];
+  if (!comment) return;
+  const origIdx = post.comments.indexOf(comment);
+  if (origIdx !== -1) post.comments.splice(origIdx, 1);
+  document.getElementById('commentsList-'+postId).innerHTML = renderComments(post.comments, postId);
+  const ok = await savePosts('Admin: delete comment');
+  showToast('Yorum silindi', 'check');
+}
+
+/* ============================================================
+   COMPOSE
+   ============================================================ */
+function handleImageSelect(e) {
+  const files = Array.from(e.target.files);
+  const remaining = 4 - selectedImages.length;
+  if (remaining <= 0) { showToast('En fazla 4 görsel eklenebilir', 'warn'); return; }
+  const toAdd = files.slice(0, remaining);
+  let loaded = 0;
+  toAdd.forEach(file => {
+    if (file.size > 3 * 1024 * 1024) { showToast('Görsel max 3MB olmalı', 'warn'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      selectedImages.push(ev.target.result);
+      loaded++;
+      if (loaded === toAdd.length) renderImagePreviews();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+function renderImagePreviews() {
+  const container = document.getElementById('imagesPreview');
+  container.innerHTML = selectedImages.map((src, i) => `
+    <div class="compose-img-thumb">
+      <img src="${src}">
+      <button class="remove-img-btn" onclick="removeImage(${i})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('');
+}
+function removeImage(idx) {
+  if (idx === undefined) { selectedImages = []; }
+  else { selectedImages.splice(idx, 1); }
+  renderImagePreviews();
+  document.getElementById('imageInput').value = '';
+}
+function renderPostImages(imgs) {
+  const n = Math.min(imgs.length, 4);
+  const cls = 'post-images count-' + n;
+  return `<div class="${cls}">${imgs.slice(0,4).map(src =>
+    `<img class="post-img" src="${src}" loading="lazy" onclick="openImgModal('${src}')">`
+  ).join('')}</div>`;
+}
+function openImgModal(src) {
+  const m = document.createElement('div');
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:zoom-out';
+  m.innerHTML=`<img src="${src}" style="max-width:95vw;max-height:95vh;border-radius:8px">`;
+  m.onclick=()=>m.remove();
+  document.body.appendChild(m);
+}
+async function submitPost() {
+  const text = document.getElementById('postText').value.trim();
+  if (!text && !selectedImageBase64) { showToast('Yazı veya görsel ekle', 'warn'); return; }
+  const btn = document.getElementById('shareBtn');
+  btn.classList.add('loading');
+  btn.querySelector('svg').style.display = 'none';
+  const newPost = {
+    id: Date.now(),
+    anonId: myAnonId,
+    text,
+    images: selectedImages.length ? [...selectedImages] : null,
+    image: selectedImages.length ? selectedImages[0] : null,
+    likes: 0,
+    date: new Date().toISOString(),
+    comments: [],
+  };
+  posts.unshift(newPost);
+  const ok = await savePosts('New post by ' + myAnonId);
+  document.getElementById('postText').value = '';
+  selectedImages = []; renderImagePreviews();
+  btn.classList.remove('loading');
+  btn.querySelector('svg').style.display = '';
+  renderFeed(getSortedPosts(), 'feedContainer');
+  showToast('Gönderi paylaşıldı 🎉', 'check');
+}
+
+/* ============================================================
+   LIKE PERSISTENCE
+   ============================================================ */
+function getLiked(type, id) {
+  return localStorage.getItem(`liked-${type}-${id}`) === '1';
+}
+function setLiked(type, id) {
+  localStorage.setItem(`liked-${type}-${id}`, '1');
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function showToast(msg, type='info') {
+  const icon = type === 'check'
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = icon + msg;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 220); }, 2800);
+}
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'az önce';
+  if (m < 60) return `${m}dk önce`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}sa önce`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d}g önce`;
+  return new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+}
+
+/* ============================================================
+   MOD SYSTEM
+   ============================================================ */
+let modPerms = {}; // aktif mod izinleri
+let modKeyDurationMs = 86400000;
+
+function hasPerm(p) { return !!modPerms[p]; }
+
+// Süre parse (1d=dakika, 1s=saat, 1g=gün, 1a=ay, 1yıl=yıl)
+function parseDuration(str) {
+  str = str.trim().toLowerCase();
+  const num = parseFloat(str);
+  if (isNaN(num) || num <= 0) return null;
+  if (str.endsWith('yıl') || str.endsWith('yil')) return num * 365 * 24 * 60 * 60 * 1000;
+  if (str.endsWith('a')) return num * 30 * 24 * 60 * 60 * 1000;
+  if (str.endsWith('g')) return num * 24 * 60 * 60 * 1000;
+  if (str.endsWith('s')) return num * 60 * 60 * 1000;
+  if (str.endsWith('d')) return num * 60 * 1000;
+  return null;
+}
+function formatDuration(ms) {
+  if (ms >= 365*24*60*60*1000) return Math.round(ms/(365*24*60*60*1000)) + ' Yıl';
+  if (ms >= 30*24*60*60*1000) return Math.round(ms/(30*24*60*60*1000)) + ' Ay';
+  if (ms >= 24*60*60*1000) return Math.round(ms/(24*60*60*1000)) + ' Gün';
+  if (ms >= 60*60*1000) return Math.round(ms/(60*60*1000)) + ' Saat';
+  return Math.round(ms/(60*1000)) + ' Dakika';
+}
+function genUniqueId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id = 'AVA-';
+  for (let i = 0; i < 19; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+// Key oluştur
+async function generateModKey() {
+  const perms = ['deletePost','addAnn','pinPost','deleteAnn'].filter(p =>
+    document.getElementById('perm-' + p)?.checked
+  );
+  if (!perms.length) { showToast('En az bir izin seç', 'warn'); return; }
+  const durStr = document.getElementById('keyDurationInput').value.trim();
+  const durMs = parseDuration(durStr);
+  if (!durMs) { showToast('Geçersiz süre (örn: 1g, 12s, 30d)', 'warn'); return; }
+  const expiry = Date.now() + durMs;
+  const keyId = genUniqueId();
+  const keyData = { perms, expiry, id: keyId };
+
+  // GitHub'a kaydet — önce fresh oku, sonra yaz
+  showToast('Key oluşturuluyor...', 'check');
+  const freshKeys = await ghGet('keys.json');
+  let keys = Array.isArray(freshKeys) ? freshKeys : [];
+  keys = keys.filter(k => k.expiry > Date.now()); // süresi dolmuşları temizle
+  keys.push(keyData);
+  const saved = await ghPut('keys.json', keys, 'Admin: add mod key');
+  if (!saved) { showToast('Key kaydedilemedi, tekrar dene', 'warn'); return; }
+
+  document.getElementById('keyVal').textContent = keyId;
+  document.getElementById('keyResult').style.display = 'block';
+}
+function copyModKey() {
+  const val = document.getElementById('keyVal').textContent;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(val).then(() => showToast('Key kopyalandı ✓', 'check')).catch(() => fallbackCopy(val));
+  } else { fallbackCopy(val); }
+}
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); showToast('Key kopyalandı ✓', 'check'); } catch { showToast('Kopyalanamadı, elle kopyala', 'warn'); }
+  document.body.removeChild(ta);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Süre input live label
+  const inp = document.getElementById('keyDurationInput');
+  const lbl = document.getElementById('keyDurationLabel');
+  if (inp && lbl) {
+    inp.addEventListener('input', () => {
+      const ms = parseDuration(inp.value);
+      lbl.textContent = ms ? formatDuration(ms) : '—';
+    });
+    const ms0 = parseDuration(inp.value);
+    if (ms0) lbl.textContent = formatDuration(ms0);
+  }
+  // Restore saved mod key
+  const saved = localStorage.getItem('modKey');
+  if (saved) tryActivateKey(saved, true);
+});
+
+async function activateModKey() {
+  const val = document.getElementById('modKeyInput').value.trim();
+  if (!val) return;
+  await tryActivateKey(val, false);
+}
+async function tryActivateKey(keyStr, silent) {
+  try {
+    keyStr = keyStr.trim();
+    if (!keyStr.startsWith('AVA-')) { if (!silent) showToast('Geçersiz key', 'warn'); return; }
+    // Lookup from GitHub
+    const keys = await ghGet('keys.json');
+    if (!Array.isArray(keys)) { if (!silent) showToast('Key doğrulanamadı', 'warn'); return; }
+    const found = keys.find(k => k.id === keyStr);
+    if (!found) { if (!silent) showToast('Geçersiz key', 'warn'); localStorage.removeItem('modKey'); return; }
+    if (Date.now() > found.expiry) {
+      if (!silent) showToast('Key süresi dolmuş', 'warn');
+      localStorage.removeItem('modKey'); return;
+    }
+    modPerms = {};
+    found.perms.forEach(p => modPerms[p] = true);
+    localStorage.setItem('modKey', keyStr);
+    const expDate = new Date(found.expiry).toLocaleDateString('tr-TR');
+    document.getElementById('modActiveBadge').style.display = '';
+    document.getElementById('modKeyExpiry').textContent = expDate + ' geçerli';
+    document.getElementById('modKeyInput').style.display = 'none';
+    document.querySelector('.mod-key-entry button').style.display = 'none';
+    // Show mod banner and relevant buttons
+    document.getElementById('modBanner').style.display = '';
+    if (hasPerm('addAnn')) document.getElementById('modAnnBtn').style.display = '';
+    if (hasPerm('deletePost')) document.body.classList.add('mod-mode');
+    if (!silent) showToast('Mod key aktif! 🛡️', 'check');
+    renderFeed(getSortedPosts(), 'feedContainer');
+  } catch(e) {
+    if (!silent) showToast('Geçersiz key formatı', 'warn');
+  }
+}
+
+</script>
+</body>
+</html>
