@@ -7,6 +7,14 @@
     "image": null,
     "likes": 0,
     "date": "2026-05-20T06:03:26.383Z",
-    "comments": []
+    "comments": [
+      {
+        "anonId": "Anon-3880",
+        "text": "aas",
+        "likes": 0,
+        "date": "2026-05-20T06:03:31.018Z",
+        "replies": []
+      }
+    ]
   }
 ]
