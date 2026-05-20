@@ -1,11 +1,9 @@
 [
   {
     "perms": [
-      "deletePost",
-      "addAnn",
-      "deleteAnn"
+      "addAnn"
     ],
-    "expiry": 1779257048732,
-    "id": "AVA-FF9CWDPY9LCNWUMR8D4"
+    "expiry": 1779257155840,
+    "id": "AVA-H45CJEKFHS6M9UQR5VL"
   }
 ]
