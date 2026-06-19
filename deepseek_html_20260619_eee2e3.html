@@ -1,0 +1,2539 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DİAGOSX — StandOff 2 Clan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================================
+           ROOT & RESET (Dark only)
+           ============================================================ */
+        :root {
+            --bg: #0a0a0a;
+            --bg-surface: #141414;
+            --bg-card: #1a1a1a;
+            --bg-hover: #222222;
+            --border: #2a2a2a;
+            --border-light: #333333;
+            --text-primary: #f0f0f0;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --red: #cc0000;
+            --red-dark: #8b0000;
+            --red-glow: #ff1a1a33;
+            --red-gradient: linear-gradient(135deg, #cc0000, #8b0000);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 40px rgba(204, 0, 0, 0.15);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --nav-h: 68px;
+            --font: 'Inter', sans-serif;
+            --font-display: 'Orbitron', monospace;
+            --transition: 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            font-size: 15px;
+            -webkit-font-smoothing: antialiased;
+            padding-top: var(--nav-h);
+        }
+        ::selection {
+            background: var(--red);
+            color: #fff;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        /* ============================================================
+           SCROLLBAR
+           ============================================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--red);
+            border-radius: 99px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--red-dark);
+        }
+
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-h);
+            background: rgba(10, 10, 10, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            z-index: 1000;
+            transition: border-color var(--transition);
+        }
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .navbar .logo .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--red-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            font-family: var(--font-display);
+            color: #fff;
+            letter-spacing: -0.5px;
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.3);
+            transition: transform var(--transition);
+        }
+        .navbar .logo .logo-icon:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+        .navbar .logo .logo-text {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: 0.08em;
+            color: var(--text-primary);
+        }
+        .navbar .logo .logo-text span {
+            color: var(--red);
+        }
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            list-style: none;
+        }
+        .navbar .nav-links li a {
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .navbar .nav-links li a:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+        .navbar .nav-links li a.active {
+            color: #fff;
+            background: var(--red);
+            box-shadow: 0 0 20px rgba(204, 0, 0, 0.25);
+        }
+        .navbar .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 6px;
+            background: none;
+            border: none;
+        }
+        .navbar .mobile-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 99px;
+            transition: var(--transition);
+        }
+        .navbar .mobile-toggle.open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        .navbar .mobile-toggle.open span:nth-child(2) {
+            opacity: 0;
+        }
+        .navbar .mobile-toggle.open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .mobile-nav-overlay {
+            position: fixed;
+            top: var(--nav-h);
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            padding: 24px 28px;
+            gap: 6px;
+            animation: fadeIn 240ms ease both;
+        }
+        .mobile-nav-overlay.open {
+            display: flex;
+        }
+        .mobile-nav-overlay a {
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            border-left: 3px solid transparent;
+        }
+        .mobile-nav-overlay a:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+            border-left-color: var(--red);
+        }
+        .mobile-nav-overlay a.active {
+            color: #fff;
+            background: var(--red);
+            border-left-color: var(--red-dark);
+        }
+        .mobile-nav-overlay .admin-login-link {
+            margin-top: 12px;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .mobile-nav-overlay .admin-login-link:hover {
+            color: var(--red);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 920px) {
+            .navbar .nav-links {
+                display: none;
+            }
+            .navbar .mobile-toggle {
+                display: flex;
+            }
+            .navbar {
+                padding: 0 16px;
+            }
+            .navbar .logo .logo-text {
+                font-size: 15px;
+            }
+        }
+
+        .admin-nav-link {
+            color: var(--text-muted) !important;
+            font-size: 12px !important;
+            padding: 6px 12px !important;
+            border-top: 1px solid var(--border);
+            margin-top: 8px;
+            padding-top: 12px !important;
+            cursor: pointer;
+            transition: color var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 0 !important;
+        }
+        .admin-nav-link:hover {
+            color: var(--red) !important;
+            background: transparent !important;
+        }
+        .admin-nav-link svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ============================================================
+           MAIN LAYOUT
+           ============================================================ */
+        .page {
+            display: none;
+            animation: pageFade 320ms ease both;
+            padding: 0 24px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes pageFade {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+           HERO
+           ============================================================ */
+        .hero {
+            padding: 60px 0 40px;
+            text-align: center;
+            position: relative;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: var(--red-gradient);
+            border-radius: 99px;
+            opacity: 0.4;
+        }
+        .hero .clan-badge {
+            width: 96px;
+            height: 96px;
+            background: var(--red-gradient);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-family: var(--font-display);
+            font-size: 40px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 2px;
+            box-shadow: 0 0 60px rgba(204, 0, 0, 0.25);
+            transition: transform var(--transition);
+        }
+        .hero .clan-badge:hover {
+            transform: scale(1.04) rotate(-2deg);
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(40px, 8vw, 72px);
+            letter-spacing: 0.04em;
+            background: var(--red-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+        .hero .tagline {
+            font-size: clamp(16px, 2vw, 22px);
+            color: var(--text-secondary);
+            margin-top: 12px;
+            font-weight: 400;
+            letter-spacing: 0.06em;
+        }
+        .hero .tagline span {
+            color: var(--red);
+            font-weight: 600;
+        }
+        .hero .sub-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        .hero .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+        .hero .stats .stat {
+            text-align: center;
+        }
+        .hero .stats .stat .num {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .hero .stats .stat .label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* ============================================================
+           SECTION HEADERS
+           ============================================================ */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            margin-top: 48px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .section-header h2 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 22px;
+            letter-spacing: 0.04em;
+            color: var(--text-primary);
+        }
+        .section-header h2 span {
+            color: var(--red);
+        }
+        .section-header .more-link {
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: color var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .section-header .more-link:hover {
+            color: var(--red);
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
+        .card-grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
+        .card-grid.three {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow), var(--shadow-glow);
+        }
+        .card .card-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            background: var(--bg-hover);
+            margin-bottom: 14px;
+        }
+        .card .card-img.square {
+            height: 160px;
+            width: 160px;
+            border-radius: 50%;
+            margin: 0 auto 14px;
+            object-fit: cover;
+        }
+        .card h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .card .role {
+            font-size: 12px;
+            color: var(--red);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .card .desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            line-height: 1.6;
+        }
+        .card .card-actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .card .card-actions .btn-sm {
+            padding: 5px 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .card .card-actions .btn-sm:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .card .card-actions .btn-sm.danger:hover {
+            border-color: var(--red);
+            color: var(--red);
+            background: rgba(204, 0, 0, 0.1);
+        }
+        .card .card-actions .btn-sm.primary {
+            background: var(--red);
+            border-color: var(--red);
+            color: #fff;
+        }
+        .card .card-actions .btn-sm.primary:hover {
+            background: var(--red-dark);
+            border-color: var(--red-dark);
+        }
+
+        /* ============================================================
+           GALLERY
+           ============================================================ */
+        .gallery-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+        .gallery-grid .gallery-item {
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+        .gallery-grid .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition);
+        }
+        .gallery-grid .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        .gallery-grid .gallery-item .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity var(--transition);
+            backdrop-filter: blur(4px);
+        }
+        .gallery-grid .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        .gallery-grid .gallery-item .gallery-overlay .caption {
+            color: #fff;
+            font-size: 13px;
+            text-align: center;
+            padding: 12px;
+            font-weight: 500;
+        }
+        .gallery-grid .gallery-item .gallery-delete {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            opacity: 0;
+        }
+        .gallery-grid .gallery-item:hover .gallery-delete {
+            opacity: 1;
+        }
+        .gallery-grid .gallery-item .gallery-delete:hover {
+            background: var(--red);
+        }
+        .gallery-grid .gallery-item .gallery-delete svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* ============================================================
+           ANNOUNCEMENTS
+           ============================================================ */
+        .announcement-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 14px;
+            transition: all var(--transition);
+            position: relative;
+        }
+        .announcement-item:hover {
+            border-color: var(--border-light);
+            box-shadow: var(--shadow);
+        }
+        .announcement-item.pinned {
+            border-left: 4px solid var(--red);
+            background: rgba(204, 0, 0, 0.04);
+        }
+        .announcement-item .ann-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+        }
+        .announcement-item .ann-header .ann-title {
+            font-weight: 700;
+            font-size: 17px;
+        }
+        .announcement-item .ann-header .ann-pin {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--red);
+            background: rgba(204, 0, 0, 0.12);
+            padding: 2px 10px;
+            border-radius: 99px;
+        }
+        .announcement-item .ann-header .ann-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+        .announcement-item .ann-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-top: 4px;
+        }
+        .announcement-item .ann-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+        .announcement-item .ann-actions .btn-sm {
+            padding: 4px 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .announcement-item .ann-actions .btn-sm:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .announcement-item .ann-actions .btn-sm.danger:hover {
+            border-color: var(--red);
+            color: var(--red);
+            background: rgba(204, 0, 0, 0.1);
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn-primary {
+            padding: 12px 28px;
+            background: var(--red-gradient);
+            border: none;
+            border-radius: var(--radius);
+            color: #fff;
+            font-family: var(--font);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 0 24px rgba(204, 0, 0, 0.2);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px rgba(204, 0, 0, 0.35);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        .btn-secondary {
+            padding: 10px 24px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: var(--font);
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-light);
+        }
+        .btn-danger {
+            padding: 10px 24px;
+            border: 1px solid var(--red);
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--red);
+            font-family: var(--font);
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .btn-danger:hover {
+            background: var(--red);
+            color: #fff;
+        }
+
+        /* ============================================================
+           FORMS
+           ============================================================ */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: var(--font);
+            font-size: 14px;
+            outline: none;
+            transition: border-color var(--transition);
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--red);
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .form-group .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        .form-group .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* ============================================================
+           ADMIN BANNER
+           ============================================================ */
+        .admin-banner {
+            background: rgba(204, 0, 0, 0.08);
+            border: 1px solid rgba(204, 0, 0, 0.25);
+            border-radius: var(--radius-lg);
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            display: none;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .admin-banner.active {
+            display: flex;
+        }
+        .admin-banner .admin-badge {
+            font-weight: 700;
+            color: var(--red);
+            font-family: var(--font-display);
+            font-size: 12px;
+            letter-spacing: 0.06em;
+        }
+        .admin-banner .admin-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-left: auto;
+        }
+        .admin-banner .admin-actions .btn-sm {
+            padding: 6px 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .admin-banner .admin-actions .btn-sm:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .admin-banner .admin-actions .btn-sm.danger {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .admin-banner .admin-actions .btn-sm.danger:hover {
+            background: var(--red);
+            color: #fff;
+        }
+        .admin-banner .admin-actions .btn-sm.primary {
+            background: var(--red);
+            border-color: var(--red);
+            color: #fff;
+        }
+        .admin-banner .admin-actions .btn-sm.primary:hover {
+            background: var(--red-dark);
+            border-color: var(--red-dark);
+        }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 280ms ease;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            padding: 28px 24px 24px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 280ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.5);
+        }
+        .modal-overlay.open .modal {
+            transform: translateY(0);
+        }
+        .modal .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .modal .modal-header h2 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        .modal .modal-header h2 span {
+            color: var(--red);
+        }
+        .modal .modal-header .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+        .modal .modal-header .modal-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .modal .modal-body {
+            padding: 4px 0 8px;
+        }
+        .modal .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+            align-items: center;
+        }
+        .toast {
+            padding: 12px 22px;
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+            animation: toastIn 260ms ease both;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: all;
+            max-width: 90vw;
+        }
+        .toast.out {
+            animation: toastOut 200ms ease forwards;
+        }
+        .toast svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+        .toast.success svg {
+            color: #22c55e;
+        }
+        .toast.error svg {
+            color: var(--red);
+        }
+        .toast.info svg {
+            color: var(--text-muted);
+        }
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateY(8px) scale(0.95);
+            }
+        }
+
+        /* ============================================================
+           DOWNLOADS
+           ============================================================ */
+        .download-hero {
+            text-align: center;
+            padding: 40px 0 20px;
+        }
+        .download-hero .logo-large {
+            width: 140px;
+            height: 140px;
+            background: var(--red-gradient);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-family: var(--font-display);
+            font-size: 56px;
+            font-weight: 900;
+            color: #fff;
+            box-shadow: 0 0 60px rgba(204, 0, 0, 0.25);
+            transition: transform var(--transition);
+            overflow: hidden;
+        }
+        .download-hero .logo-large:hover {
+            transform: scale(1.04) rotate(-2deg);
+        }
+        .download-hero .logo-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .download-hero h2 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 28px;
+        }
+        .download-hero .sub {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-top: 6px;
+        }
+        .download-btn-wrap {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        /* ============================================================
+           EMPTY STATE
+           ============================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+        .empty-state h3 {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .empty-state p {
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+           MISC
+           ============================================================ */
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .gap-12 {
+            gap: 12px;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .mt-24 {
+            margin-top: 24px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .mb-16 {
+            margin-bottom: 16px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .text-muted {
+            color: var(--text-muted);
+        }
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+        .text-red {
+            color: var(--red);
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 24px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer .footer-socials {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .footer .footer-socials a {
+            color: var(--text-muted);
+            transition: color var(--transition);
+        }
+        .footer .footer-socials a:hover {
+            color: var(--red);
+        }
+        .footer .footer-socials a svg {
+            width: 20px;
+            height: 20px;
+        }
+        .footer .footer-brand {
+            font-family: var(--font-display);
+            font-size: 13px;
+            letter-spacing: 0.04em;
+        }
+        .footer .footer-brand span {
+            color: var(--red);
+        }
+        .footer .footer-copy {
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* ============================================================
+           LOADING SKELETON
+           ============================================================ */
+        .skeleton {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            animation: shimmer 1.6s ease infinite;
+        }
+        .skeleton .skeleton-line {
+            height: 14px;
+            border-radius: 7px;
+            background: var(--bg-hover);
+            margin-bottom: 10px;
+        }
+        .skeleton .skeleton-line.short {
+            width: 40%;
+        }
+        .skeleton .skeleton-line.medium {
+            width: 70%;
+        }
+        .skeleton .skeleton-line.large {
+            width: 100%;
+        }
+        .skeleton .skeleton-line.circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+        }
+        @keyframes shimmer {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .image-preview-thumb {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-top: 8px;
+        }
+        .logo-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            object-fit: cover;
+            background: var(--bg-hover);
+        }
+        .member-img-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            object-fit: cover;
+            background: var(--bg-hover);
+        }
+
+        .admin-tools {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .admin-tools .btn-sm {
+            padding: 8px 18px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: var(--font);
+        }
+        .admin-tools .btn-sm:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .admin-tools .btn-sm.primary {
+            background: var(--red);
+            border-color: var(--red);
+            color: #fff;
+        }
+        .admin-tools .btn-sm.primary:hover {
+            background: var(--red-dark);
+            border-color: var(--red-dark);
+        }
+
+        @media (max-width: 720px) {
+            .hero .stats {
+                gap: 20px;
+            }
+            .hero .stats .stat .num {
+                font-size: 22px;
+            }
+            .admin-banner {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .admin-banner .admin-actions {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    NAVBAR
+    ============================================================ -->
+    <nav class="navbar" id="navbar">
+        <div class="logo" onclick="navigateTo('home')">
+            <div class="logo-icon">DG</div>
+            <div class="logo-text">DİAGOS<span>X</span></div>
+        </div>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a class="active" data-page="home" onclick="navigateTo('home')">Ana Sayfa</a></li>
+            <li><a data-page="about" onclick="navigateTo('about')">Hakkında</a></li>
+            <li><a data-page="members" onclick="navigateTo('members')">Üyeler</a></li>
+            <li><a data-page="gallery" onclick="navigateTo('gallery')">Galeri</a></li>
+            <li><a data-page="announcements" onclick="navigateTo('announcements')">Duyurular</a></li>
+            <li><a data-page="downloads" onclick="navigateTo('downloads')">İndir</a></li>
+            <li class="admin-nav-link" onclick="openAdminModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Admin Girişi
+            </li>
+        </ul>
+
+        <div class="nav-actions">
+            <button class="mobile-toggle" id="mobileToggle" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Nav Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNav">
+        <a class="active" data-page="home" onclick="navigateTo('home')">Ana Sayfa</a>
+        <a data-page="about" onclick="navigateTo('about')">Hakkında</a>
+        <a data-page="members" onclick="navigateTo('members')">Üyeler</a>
+        <a data-page="gallery" onclick="navigateTo('gallery')">Galeri</a>
+        <a data-page="announcements" onclick="navigateTo('announcements')">Duyurular</a>
+        <a data-page="downloads" onclick="navigateTo('downloads')">İndir</a>
+        <a class="admin-login-link" onclick="openAdminModal()">🔧 Admin Girişi</a>
+    </div>
+
+    <!-- ============================================================
+    ADMIN BANNER
+    ============================================================ -->
+    <div class="admin-banner" id="adminBanner">
+        <span class="admin-badge">🔧 ADMIN MODU</span>
+        <span style="font-size:13px;color:var(--text-secondary)">Tüm yönetim araçları aktif</span>
+        <div class="admin-actions">
+            <button class="btn-sm primary" onclick="openAddMemberModal()">➕ Üye Ekle</button>
+            <button class="btn-sm primary" onclick="openAddGalleryModal()">🖼️ Görsel Ekle</button>
+            <button class="btn-sm primary" onclick="openAddAnnouncementModal()">📢 Duyuru Ekle</button>
+            <button class="btn-sm primary" onclick="openSettingsModal()">⚙️ Ayarlar</button>
+            <button class="btn-sm danger" onclick="adminLogout()">Çıkış</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    PAGES
+    ============================================================ -->
+    <main>
+
+        <!-- HOME -->
+        <section class="page active" id="page-home">
+            <div class="hero">
+                <div class="clan-badge" id="homeLogoDisplay">DG</div>
+                <h1>DİAGOSX</h1>
+                <div class="tagline">StandOff 2 <span>Elit</span> Clan</div>
+                <div class="sub-text">
+                    DİAGOSX, StandOff 2'de rekabetin zirvesinde yer alan
+                    disiplinli ve yetenekli oyunculardan oluşan bir topluluktur.
+                    Birlikte büyür, birlikte kazanırız.
+                </div>
+                <div class="stats" id="homeStats">
+                    <div class="stat">
+                        <div class="num" id="statMembers">0</div>
+                        <div class="label">Üye</div>
+                    </div>
+                    <div class="stat">
+                        <div class="num" id="statGallery">0</div>
+                        <div class="label">Görsel</div>
+                    </div>
+                    <div class="stat">
+                        <div class="num" id="statAnnouncements">0</div>
+                        <div class="label">Duyuru</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Son Duyurular -->
+            <div class="section-header">
+                <h2>📢 Son <span>Duyurular</span></h2>
+                <span class="more-link" onclick="navigateTo('announcements')">Tümünü Gör →</span>
+            </div>
+            <div id="homeAnnouncements"></div>
+
+            <!-- Öne Çıkan Üyeler -->
+            <div class="section-header">
+                <h2>⭐ Öne Çıkan <span>Üyeler</span></h2>
+                <span class="more-link" onclick="navigateTo('members')">Tüm Üyeler →</span>
+            </div>
+            <div id="homeMembers" class="card-grid three"></div>
+        </section>
+
+        <!-- ABOUT -->
+        <section class="page" id="page-about">
+            <div style="padding:24px 0 12px">
+                <h1 style="font-family:var(--font-display);font-weight:800;font-size:32px;letter-spacing:0.04em">Hakkımızda</h1>
+                <p style="color:var(--text-secondary);font-size:15px;margin-top:4px">DİAGOSX — StandOff 2'de disiplin, yetenek ve zafer</p>
+            </div>
+            <div style="display:grid;gap:20px;grid-template-columns:1fr 1fr;margin-top:16px">
+                <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px">
+                    <h3 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--red)">Vizyon</h3>
+                    <p style="color:var(--text-secondary);margin-top:8px;line-height:1.8">
+                        DİAGOSX olarak amacımız, StandOff 2 ekosisteminde
+                        saygın, disiplinli ve rekabetçi bir clan olarak
+                        anılmak. Her oyuncunun potansiyelini en üst seviyeye
+                        çıkardığı, birlikte başardığımız bir aile olmak.
+                    </p>
+                </div>
+                <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px">
+                    <h3 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--red)">Misyon</h3>
+                    <p style="color:var(--text-secondary);margin-top:8px;line-height:1.8">
+                        Yetenekli oyuncuları bir araya getirerek takım ruhunu
+                        güçlendirmek, düzenli antrenmanlar ve turnuvalarla
+                        başarıyı sürekli kılmak. Adil, saygılı ve kazanmaya
+                        odaklı bir kültür inşa etmek.
+                    </p>
+                </div>
+            </div>
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-top:20px">
+                <h3 style="font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--red)">Değerlerimiz</h3>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px">
+                    <div style="padding:14px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)"><strong>🎯 Disiplin</strong><br><span style="color:var(--text-muted);font-size:13px">Düzenli antrenman ve taktik çalışma</span></div>
+                    <div style="padding:14px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)"><strong>🤝 Dayanışma</strong><br><span style="color:var(--text-muted);font-size:13px">Her üye birbirinin gelişimine katkı sağlar</span></div>
+                    <div style="padding:14px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)"><strong>🏆 Başarı</strong><br><span style="color:var(--text-muted);font-size:13px">Kazanmak için değil, en iyisi olmak için</span></div>
+                    <div style="padding:14px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)"><strong>⚡ Rekabet</strong><br><span style="color:var(--text-muted);font-size:13px">Her maçta en iyisini ortaya koymak</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MEMBERS -->
+        <section class="page" id="page-members">
+            <div style="padding:24px 0 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                <div>
+                    <h1 style="font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:0.04em">👥 Üyeler</h1>
+                    <p style="color:var(--text-secondary);font-size:14px;margin-top:2px">Clanımızın gururlu üyeleri</p>
+                </div>
+                <div class="admin-tools" id="membersAdminTools" style="display:none">
+                    <button class="btn-sm primary" onclick="openAddMemberModal()">➕ Üye Ekle</button>
+                </div>
+            </div>
+            <div id="membersContainer" class="card-grid three"></div>
+        </section>
+
+        <!-- GALLERY -->
+        <section class="page" id="page-gallery">
+            <div style="padding:24px 0 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                <div>
+                    <h1 style="font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:0.04em">🖼️ Galeri</h1>
+                    <p style="color:var(--text-secondary);font-size:14px;margin-top:2px">Clan anıları ve görseller</p>
+                </div>
+                <div class="admin-tools" id="galleryAdminTools" style="display:none">
+                    <button class="btn-sm primary" onclick="openAddGalleryModal()">➕ Görsel Ekle</button>
+                </div>
+            </div>
+            <div id="galleryContainer" class="gallery-grid"></div>
+        </section>
+
+        <!-- ANNOUNCEMENTS -->
+        <section class="page" id="page-announcements">
+            <div style="padding:24px 0 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                <div>
+                    <h1 style="font-family:var(--font-display);font-weight:800;font-size:28px;letter-spacing:0.04em">📢 Duyurular</h1>
+                    <p style="color:var(--text-secondary);font-size:14px;margin-top:2px">Clan'dan son haberler</p>
+                </div>
+                <div class="admin-tools" id="announcementsAdminTools" style="display:none">
+                    <button class="btn-sm primary" onclick="openAddAnnouncementModal()">➕ Duyuru Ekle</button>
+                </div>
+            </div>
+            <div id="announcementsContainer"></div>
+        </section>
+
+        <!-- DOWNLOADS -->
+        <section class="page" id="page-downloads">
+            <div class="download-hero">
+                <div class="logo-large" id="downloadLogoDisplay">DG</div>
+                <h2>DİAGOSX</h2>
+                <div class="sub">Clan logomuzu indir, topluluğa katıl!</div>
+                <div class="download-btn-wrap">
+                    <button class="btn-primary" onclick="downloadLogo()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Logo İndir
+                    </button>
+                </div>
+                <div style="margin-top:32px;padding:20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);max-width:500px;margin-left:auto;margin-right:auto">
+                    <p style="color:var(--text-muted);font-size:13px">
+                        <span style="color:var(--red);font-weight:600">DİAGOSX</span> logosu tüm hakları saklıdır.
+                        Clan tanıtımı ve içeriklerinde kullanabilirsiniz.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================
+    FOOTER
+    ============================================================ -->
+    <footer class="footer">
+        <div class="footer-socials" id="footerSocials">
+            <a href="#" id="footerDiscord" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128c.126-.094.252-.192.373-.291a.074.074 0 0 1 .077-.01c3.927 1.793 8.18 1.793 12.06 0a.074.074 0 0 1 .078.01c.12.099.245.197.372.291a.077.077 0 0 1-.006.128a13.108 13.108 0 0 1-1.873.892a.077.077 0 0 0-.041.106c.352.699.764 1.364 1.226 1.994a.078.078 0 0 0 .084.028a19.9 19.9 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/></svg></a>
+            <a href="#" id="footerYoutube" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+            <a href="#" id="footerInstagram" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+            <a href="#" id="footerTelegram" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+        </div>
+        <div class="footer-brand">DİAGOS<span>X</span></div>
+        <div class="footer-copy">© 2026 DİAGOSX Clan — StandOff 2</div>
+    </footer>
+
+    <!-- ============================================================
+    MODALS
+    ============================================================ -->
+
+    <!-- Admin Login Modal -->
+    <div class="modal-overlay" id="adminModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🔧 <span>Admin</span> Girişi</h2>
+                <button class="modal-close" onclick="closeAdminModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="color:var(--text-secondary);font-size:14px;margin-bottom:18px">Clan yönetim paneline erişmek için şifreyi girin.</p>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <input type="password" id="adminPasswordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPassword()" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAdminModal()">Vazgeç</button>
+                <button class="btn-primary" onclick="checkAdminPassword()">Giriş Yap</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div class="modal-overlay" id="addMemberModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>➕ <span>Üye</span> Ekle</h2>
+                <button class="modal-close" onclick="closeAddMemberModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>İsim</label>
+                    <input type="text" id="memberName" placeholder="Oyuncu adı" />
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <input type="text" id="memberRole" placeholder="örn: Lider, Kaptan, Oyuncu" />
+                </div>
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <textarea id="memberDesc" placeholder="Kısa açıklama..." rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Profil Resmi</label>
+                    <div class="file-input-wrapper">
+                        <button class="btn-secondary" style="width:100%">📁 Resim Seç</button>
+                        <input type="file" accept="image/*" id="memberImageInput" onchange="previewMemberImage(event)" />
+                    </div>
+                    <img id="memberImagePreview" class="member-img-preview" style="display:none;margin-top:8px" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAddMemberModal()">Vazgeç</button>
+                <button class="btn-primary" onclick="addMember()">Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Member Modal -->
+    <div class="modal-overlay" id="editMemberModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>✏️ <span>Üye</span> Düzenle</h2>
+                <button class="modal-close" onclick="closeEditMemberModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editMemberId" />
+                <div class="form-group">
+                    <label>İsim</label>
+                    <input type="text" id="editMemberName" placeholder="Oyuncu adı" />
+                </div>
+                <div class="form-group">
+                    <label>Rol</label>
+                    <input type="text" id="editMemberRole" placeholder="Rol" />
+                </div>
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <textarea id="editMemberDesc" rows="2" placeholder="Açıklama..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Profil Resmi (değiştirmek istersen yeni seç)</label>
+                    <div class="file-input-wrapper">
+                        <button class="btn-secondary" style="width:100%">📁 Resim Seç</button>
+                        <input type="file" accept="image/*" id="editMemberImageInput" onchange="previewEditMemberImage(event)" />
+                    </div>
+                    <img id="editMemberImagePreview" class="member-img-preview" style="display:none;margin-top:8px" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeEditMemberModal()">Vazgeç</button>
+                <button class="btn-primary" onclick="saveEditMember()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Gallery Modal -->
+    <div class="modal-overlay" id="addGalleryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🖼️ <span>Görsel</span> Ekle</h2>
+                <button class="modal-close" onclick="closeAddGalleryModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Görsel</label>
+                    <div class="file-input-wrapper">
+                        <button class="btn-secondary" style="width:100%">📁 Görsel Seç</button>
+                        <input type="file" accept="image/*" id="galleryImageInput" onchange="previewGalleryImage(event)" />
+                    </div>
+                    <img id="galleryImagePreview" class="image-preview-thumb" style="display:none;margin-top:8px" />
+                </div>
+                <div class="form-group">
+                    <label>Açıklama (isteğe bağlı)</label>
+                    <input type="text" id="galleryCaption" placeholder="Görsel açıklaması..." />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAddGalleryModal()">Vazgeç</button>
+                <button class="btn-primary" onclick="addGalleryImage()">Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Announcement Modal -->
+    <div class="modal-overlay" id="addAnnouncementModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📢 <span>Duyuru</span> Ekle</h2>
+                <button class="modal-close" onclick="closeAddAnnouncementModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Başlık</label>
+                    <input type="text" id="annTitle" placeholder="Duyuru başlığı" />
+                </div>
+                <div class="form-group">
+                    <label>İçerik</label>
+                    <textarea id="annContent" rows="4" placeholder="Duyuru içeriği..."></textarea>
+                </div>
+                <div class="form-group" style="display:flex;align-items:center;gap:10px">
+                    <input type="checkbox" id="annPinned" style="width:auto" />
+                    <label for="annPinned" style="margin:0;text-transform:none;font-weight:400;font-size:14px;color:var(--text-secondary)">Sabitle</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeAddAnnouncementModal()">Vazgeç</button>
+                <button class="btn-primary" onclick="addAnnouncement()">Yayınla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>⚙️ <span>Ayarlar</span></h2>
+                <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Clan Adı</label>
+                    <input type="text" id="settingsClanName" value="DİAGOSX" />
+                </div>
+                <div class="form-group">
+                    <label>Clan Etiketi</label>
+                    <input type="text" id="settingsClanTag" value="DG" />
+                </div>
+                <div class="form-group">
+                    <label>Açıklama</label>
+                    <textarea id="settingsDesc" rows="2">StandOff 2 elit clan</textarea>
+                </div>
+                <hr style="border-color:var(--border);margin:16px 0" />
+                <h4 style="font-weight:600;margin-bottom:12px;font-size:14px">Sosyal Medya</h4>
+                <div class="form-group"><label>Discord</label><input type="text" id="settingsDiscord" placeholder="https://discord.gg/..." /></div>
+                <div class="form-group"><label>YouTube</label><input type="text" id="settingsYoutube" placeholder="https://youtube.com/..." /></div>
+                <div class="form-group"><label>Instagram</label><input type="text" id="settingsInstagram" placeholder="https://instagram.com/..." /></div>
+                <div class="form-group"><label>Telegram</label><input type="text" id="settingsTelegram" placeholder="https://t.me/..." /></div>
+                <hr style="border-color:var(--border);margin:16px 0" />
+                <div class="form-group">
+                    <label>Logo (değiştirmek için yeni seç)</label>
+                    <div class="file-input-wrapper">
+                        <button class="btn-secondary" style="width:100%">📁 Logo Seç</button>
+                        <input type="file" accept="image/*" id="settingsLogoInput" onchange="previewSettingsLogo(event)" />
+                    </div>
+                    <img id="settingsLogoPreview" class="logo-preview" style="display:none;margin-top:8px" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeSettingsModal()">Vazgeç</button>
+                <button class="btn-primary" onclick="saveSettings()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    TOAST CONTAINER
+    ============================================================ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
+    <script>
+        /* ============================================================
+           UTF-8 HELPERS (exact same)
+           ============================================================ */
+        function utfToBase64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binary = '';
+            bytes.forEach(b => binary += String.fromCharCode(b));
+            return btoa(binary);
+        }
+
+        function base64ToUtf(b64) {
+            const binary = atob(b64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return new TextDecoder().decode(bytes);
+        }
+
+        /* ============================================================
+           CONFIG — EXACT SAME
+           ============================================================ */
+        const GH_USER = 'ForsDev101';
+        const GH_REPO = 'osste';
+        const WORKER_URL = 'https://avakinifsa.homehomenyt.workers.dev/';
+        const ADMIN_PASS = 'Fors1959';
+
+        const FILES = {
+            members: 'members.json',
+            gallery: 'gallery.json',
+            announcements: 'announcements.json',
+            settings: 'settings.json',
+        };
+
+        let fileSHAs = {};
+
+        /* ============================================================
+           GITHUB API — EXACT SAME LOGIC
+           ============================================================ */
+        function ghApiUrl(file) {
+            const target = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${file}`;
+            return `${WORKER_URL}/proxy?url=${encodeURIComponent(target)}`;
+        }
+
+        async function ghGet(file) {
+            try {
+                const r = await fetch(ghApiUrl(file));
+                if (r.status === 404) return '__NOT_FOUND__';
+                if (!r.ok) return null;
+                const d = await r.json();
+                fileSHAs[file] = d.sha;
+                const parsed = base64ToUtf(d.content.replace(/\n/g, ''));
+                return JSON.parse(parsed);
+            } catch { return null; }
+        }
+
+        async function ghPut(file, data, message) {
+            try {
+                if (!fileSHAs[file]) {
+                    const getR = await fetch(ghApiUrl(file));
+                    const getD = await getR.json();
+                    if (getD.sha) fileSHAs[file] = getD.sha;
+                }
+                const body = {
+                    message: message || `Update ${file}`,
+                    content: utfToBase64(JSON.stringify(data, null, 2)),
+                };
+                if (fileSHAs[file]) body.sha = fileSHAs[file];
+
+                const putR = await fetch(ghApiUrl(file), {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const putD = await putR.json();
+
+                if (putR.ok) {
+                    if (putD.content?.sha) fileSHAs[file] = putD.content.sha;
+                    return true;
+                }
+                if (putR.status === 409 || putR.status === 422 || putR.status === 412) {
+                    const getR2 = await fetch(ghApiUrl(file));
+                    const getD2 = await getR2.json();
+                    if (getD2.sha) { fileSHAs[file] = getD2.sha;
+                        body.sha = getD2.sha; }
+                    const putR2 = await fetch(ghApiUrl(file), {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(body),
+                    });
+                    const putD2 = await putR2.json();
+                    if (putR2.ok) {
+                        if (putD2.content?.sha) fileSHAs[file] = putD2.content.sha;
+                        return true;
+                    }
+                }
+                return false;
+            } catch { return false; }
+        }
+
+        async function ensureFiles() {
+            const [m, g, a, s] = await Promise.all([
+                ghGet(FILES.members),
+                ghGet(FILES.gallery),
+                ghGet(FILES.announcements),
+                ghGet(FILES.settings),
+            ]);
+            if (m === '__NOT_FOUND__') await ghPut(FILES.members, [], 'Init members.json');
+            if (g === '__NOT_FOUND__') await ghPut(FILES.gallery, [], 'Init gallery.json');
+            if (a === '__NOT_FOUND__') await ghPut(FILES.announcements, [], 'Init announcements.json');
+            if (s === '__NOT_FOUND__') await ghPut(FILES.settings, { clanName: 'DİAGOSX', clanTag: 'DG',
+                    description: 'StandOff 2 elit clan', social: { discord: '', youtube: '', instagram: '',
+                        telegram: '' }, logo: '' }, 'Init settings.json');
+        }
+
+        /* ============================================================
+           STATE
+           ============================================================ */
+        let members = [];
+        let gallery = [];
+        let announcements = [];
+        let settings = {};
+        let isAdminMode = false;
+        let currentPage = 'home';
+        let memberImageBase64 = null;
+        let editMemberImageBase64 = null;
+        let galleryImageBase64 = null;
+        let settingsLogoBase64 = null;
+        let editMemberId = null;
+
+        /* ============================================================
+           NAVIGATION
+           ============================================================ */
+        function navigateTo(page) {
+            currentPage = page;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.add('active');
+
+            document.querySelectorAll('.nav-links a[data-page], .mobile-nav-overlay a[data-page]').forEach(el => {
+                el.classList.toggle('active', el.dataset.page === page);
+            });
+
+            closeMobileMenu();
+            renderPage(page);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPage(page) {
+            if (page === 'home') renderHome();
+            if (page === 'members') renderMembers();
+            if (page === 'gallery') renderGallery();
+            if (page === 'announcements') renderAnnouncements();
+            if (page === 'downloads') renderDownloads();
+            // about and downloads are static
+            updateFooterSocials();
+        }
+
+        function toggleMobileMenu() {
+            const overlay = document.getElementById('mobileNav');
+            const toggle = document.getElementById('mobileToggle');
+            overlay.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('mobileNav').classList.remove('open');
+            document.getElementById('mobileToggle').classList.remove('open');
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        function showToast(msg, type = 'info') {
+            const icons = {
+                success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20,6 9,17 4,12"/></svg>`,
+                error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+                info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+            };
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.innerHTML = (icons[type] || icons.info) + msg;
+            document.getElementById('toastContainer').appendChild(t);
+            setTimeout(() => { t.classList.add('out');
+                setTimeout(() => t.remove(), 220); }, 3200);
+        }
+
+        /* ============================================================
+           ADMIN SYSTEM
+           ============================================================ */
+        function openAdminModal() {
+            closeMobileMenu();
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('adminPasswordInput').classList.remove('error');
+            document.getElementById('adminModal').classList.add('open');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('open');
+        }
+
+        function checkAdminPassword() {
+            const val = document.getElementById('adminPasswordInput').value;
+            if (val === ADMIN_PASS) {
+                isAdminMode = true;
+                document.getElementById('adminBanner').classList.add('active');
+                document.getElementById('membersAdminTools').style.display = '';
+                document.getElementById('galleryAdminTools').style.display = '';
+                document.getElementById('announcementsAdminTools').style.display = '';
+                closeAdminModal();
+                showToast('Admin modu aktif 🔧', 'success');
+                renderPage(currentPage);
+            } else {
+                document.getElementById('adminPasswordInput').classList.add('error');
+                showToast('Yanlış şifre!', 'error');
+            }
+        }
+
+        function adminLogout() {
+            isAdminMode = false;
+            document.getElementById('adminBanner').classList.remove('active');
+            document.getElementById('membersAdminTools').style.display = 'none';
+            document.getElementById('galleryAdminTools').style.display = 'none';
+            document.getElementById('announcementsAdminTools').style.display = 'none';
+            showToast('Admin modundan çıkıldı', 'info');
+            renderPage(currentPage);
+        }
+
+        /* ============================================================
+           DATA LOAD / SAVE
+           ============================================================ */
+        async function loadAllData() {
+            const [m, g, a, s] = await Promise.all([
+                ghGet(FILES.members),
+                ghGet(FILES.gallery),
+                ghGet(FILES.announcements),
+                ghGet(FILES.settings),
+            ]);
+            members = Array.isArray(m) ? m : [];
+            gallery = Array.isArray(g) ? g : [];
+            announcements = Array.isArray(a) ? a : [];
+            settings = (s && typeof s === 'object') ? s : { clanName: 'DİAGOSX', clanTag: 'DG', description: '',
+                social: {}, logo: '' };
+            if (!settings.social) settings.social = {};
+            renderPage(currentPage);
+            updateStats();
+        }
+
+        async function saveMembers() {
+            return await ghPut(FILES.members, members, 'Update members');
+        }
+
+        async function saveGallery() {
+            return await ghPut(FILES.gallery, gallery, 'Update gallery');
+        }
+
+        async function saveAnnouncements() {
+            return await ghPut(FILES.announcements, announcements, 'Update announcements');
+        }
+
+        async function saveSettings() {
+            return await ghPut(FILES.settings, settings, 'Update settings');
+        }
+
+        /* ============================================================
+           RENDER: HOME
+           ============================================================ */
+        function renderHome() {
+            // Logo
+            const logoEl = document.getElementById('homeLogoDisplay');
+            if (settings.logo) {
+                logoEl.innerHTML = `<img src="${settings.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:24px" />`;
+            } else {
+                logoEl.textContent = settings.clanTag || 'DG';
+            }
+
+            // Son 3 duyuru
+            const container = document.getElementById('homeAnnouncements');
+            const sorted = [...announcements].sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return new Date(b.date) - new Date(a.date);
+            });
+            const recent = sorted.slice(0, 3);
+            if (!recent.length) {
+                container.innerHTML =
+                    `<div class="empty-state"><h3>Henüz duyuru yok</h3><p>İlk duyuru admin tarafından eklenecek.</p></div>`;
+            } else {
+                container.innerHTML = recent.map(a => `
+                    <div class="announcement-item ${a.pinned?'pinned':''}">
+                        <div class="ann-header">
+                            <span class="ann-title">${escHtml(a.title)}</span>
+                            ${a.pinned ? '<span class="ann-pin">📌 Sabit</span>' : ''}
+                            <span class="ann-date">${timeAgo(a.date)}</span>
+                        </div>
+                        <div class="ann-content">${escHtml(a.content)}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Öne çıkan üyeler (ilk 3)
+            const mContainer = document.getElementById('homeMembers');
+            const featured = members.slice(0, 3);
+            if (!featured.length) {
+                mContainer.innerHTML =
+                    `<div class="empty-state"><h3>Henüz üye yok</h3><p>Admin tarafından eklenecek.</p></div>`;
+            } else {
+                mContainer.innerHTML = featured.map(m => `
+                    <div class="card">
+                        ${m.image ? `<img class="card-img square" src="${m.image}" alt="${escHtml(m.name)}" />` : `<div class="card-img square" style="display:flex;align-items:center;justify-content:center;background:var(--bg-hover);font-size:40px;font-weight:700;color:var(--red)">${m.name.charAt(0).toUpperCase()}</div>`}
+                        <h3>${escHtml(m.name)}</h3>
+                        <div class="role">${escHtml(m.role || 'Üye')}</div>
+                        ${m.description ? `<div class="desc">${escHtml(m.description)}</div>` : ''}
+                    </div>
+                `).join('');
+            }
+            updateStats();
+        }
+
+        /* ============================================================
+           RENDER: MEMBERS
+           ============================================================ */
+        function renderMembers() {
+            const container = document.getElementById('membersContainer');
+            if (!members.length) {
+                container.innerHTML =
+                    `<div class="empty-state"><h3>👥 Henüz üye yok</h3><p>Admin panelinden üye ekleyebilirsin.</p></div>`;
+                return;
+            }
+            container.innerHTML = members.map(m => `
+                <div class="card">
+                    ${m.image ? `<img class="card-img square" src="${m.image}" alt="${escHtml(m.name)}" />` : `<div class="card-img square" style="display:flex;align-items:center;justify-content:center;background:var(--bg-hover);font-size:40px;font-weight:700;color:var(--red)">${m.name.charAt(0).toUpperCase()}</div>`}
+                    <h3>${escHtml(m.name)}</h3>
+                    <div class="role">${escHtml(m.role || 'Üye')}</div>
+                    ${m.description ? `<div class="desc">${escHtml(m.description)}</div>` : ''}
+                    ${isAdminMode ? `
+                        <div class="card-actions">
+                            <button class="btn-sm" onclick="openEditMemberModal('${m.id}')">✏️ Düzenle</button>
+                            <button class="btn-sm danger" onclick="removeMember('${m.id}')">🗑️ Sil</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        /* ============================================================
+           RENDER: GALLERY
+           ============================================================ */
+        function renderGallery() {
+            const container = document.getElementById('galleryContainer');
+            if (!gallery.length) {
+                container.innerHTML =
+                    `<div class="empty-state"><h3>🖼️ Henüz görsel yok</h3><p>Admin panelinden görsel ekleyebilirsin.</p></div>`;
+                return;
+            }
+            container.innerHTML = gallery.map(g => `
+                <div class="gallery-item">
+                    <img src="${g.image}" alt="${escHtml(g.caption || 'Görsel')}" loading="lazy" />
+                    ${g.caption ? `<div class="gallery-overlay"><div class="caption">${escHtml(g.caption)}</div></div>` : ''}
+                    ${isAdminMode ? `
+                        <button class="gallery-delete" onclick="removeGalleryImage('${g.id}')" title="Sil">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        /* ============================================================
+           RENDER: ANNOUNCEMENTS
+           ============================================================ */
+        function renderAnnouncements() {
+            const container = document.getElementById('announcementsContainer');
+            if (!announcements.length) {
+                container.innerHTML =
+                    `<div class="empty-state"><h3>📢 Henüz duyuru yok</h3><p>Admin panelinden duyuru ekleyebilirsin.</p></div>`;
+                return;
+            }
+            const sorted = [...announcements].sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return new Date(b.date) - new Date(a.date);
+            });
+            container.innerHTML = sorted.map(a => `
+                <div class="announcement-item ${a.pinned?'pinned':''}">
+                    <div class="ann-header">
+                        <span class="ann-title">${escHtml(a.title)}</span>
+                        ${a.pinned ? '<span class="ann-pin">📌 Sabit</span>' : ''}
+                        <span class="ann-date">${timeAgo(a.date)}</span>
+                    </div>
+                    <div class="ann-content">${escHtml(a.content)}</div>
+                    ${isAdminMode ? `
+                        <div class="ann-actions">
+                            <button class="btn-sm" onclick="togglePinAnnouncement('${a.id}')">${a.pinned ? '📌 Sabitliği Kaldır' : '📌 Sabitle'}</button>
+                            <button class="btn-sm danger" onclick="removeAnnouncement('${a.id}')">🗑️ Sil</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        /* ============================================================
+           RENDER: DOWNLOADS
+           ============================================================ */
+        function renderDownloads() {
+            const logoEl = document.getElementById('downloadLogoDisplay');
+            if (settings.logo) {
+                logoEl.innerHTML = `<img src="${settings.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:30px" />`;
+            } else {
+                logoEl.textContent = settings.clanTag || 'DG';
+            }
+        }
+
+        /* ============================================================
+           UPDATE STATS & FOOTER
+           ============================================================ */
+        function updateStats() {
+            document.getElementById('statMembers').textContent = members.length;
+            document.getElementById('statGallery').textContent = gallery.length;
+            document.getElementById('statAnnouncements').textContent = announcements.length;
+        }
+
+        function updateFooterSocials() {
+            const s = settings.social || {};
+            document.getElementById('footerDiscord').href = s.discord || '#';
+            document.getElementById('footerYoutube').href = s.youtube || '#';
+            document.getElementById('footerInstagram').href = s.instagram || '#';
+            document.getElementById('footerTelegram').href = s.telegram || '#';
+        }
+
+        /* ============================================================
+           MEMBER CRUD
+           ============================================================ */
+        function openAddMemberModal() {
+            if (!isAdminMode) return;
+            document.getElementById('memberName').value = '';
+            document.getElementById('memberRole').value = '';
+            document.getElementById('memberDesc').value = '';
+            document.getElementById('memberImageInput').value = '';
+            document.getElementById('memberImagePreview').style.display = 'none';
+            memberImageBase64 = null;
+            document.getElementById('addMemberModal').classList.add('open');
+        }
+
+        function closeAddMemberModal() {
+            document.getElementById('addMemberModal').classList.remove('open');
+        }
+
+        function previewMemberImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                memberImageBase64 = ev.target.result;
+                const img = document.getElementById('memberImagePreview');
+                img.src = memberImageBase64;
+                img.style.display = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function addMember() {
+            const name = document.getElementById('memberName').value.trim();
+            const role = document.getElementById('memberRole').value.trim();
+            const desc = document.getElementById('memberDesc').value.trim();
+            if (!name) { showToast('İsim gerekli', 'error'); return; }
+            const newMember = {
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                name,
+                role: role || 'Üye',
+                description: desc,
+                image: memberImageBase64 || '',
+                dateAdded: new Date().toISOString(),
+            };
+            members.push(newMember);
+            const ok = await saveMembers();
+            if (ok) {
+                closeAddMemberModal();
+                showToast('Üye eklendi ✅', 'success');
+                renderMembers();
+                updateStats();
+            } else {
+                showToast('Kaydedilemedi, tekrar dene', 'error');
+            }
+        }
+
+        function openEditMemberModal(id) {
+            if (!isAdminMode) return;
+            const m = members.find(x => x.id === id);
+            if (!m) return;
+            editMemberId = id;
+            document.getElementById('editMemberName').value = m.name;
+            document.getElementById('editMemberRole').value = m.role || '';
+            document.getElementById('editMemberDesc').value = m.description || '';
+            document.getElementById('editMemberImageInput').value = '';
+            document.getElementById('editMemberImagePreview').style.display = 'none';
+            editMemberImageBase64 = null;
+            document.getElementById('editMemberModal').classList.add('open');
+        }
+
+        function closeEditMemberModal() {
+            document.getElementById('editMemberModal').classList.remove('open');
+            editMemberId = null;
+        }
+
+        function previewEditMemberImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                editMemberImageBase64 = ev.target.result;
+                const img = document.getElementById('editMemberImagePreview');
+                img.src = editMemberImageBase64;
+                img.style.display = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function saveEditMember() {
+            const id = editMemberId;
+            if (!id) return;
+            const m = members.find(x => x.id === id);
+            if (!m) return;
+            m.name = document.getElementById('editMemberName').value.trim() || m.name;
+            m.role = document.getElementById('editMemberRole').value.trim() || 'Üye';
+            m.description = document.getElementById('editMemberDesc').value.trim();
+            if (editMemberImageBase64) m.image = editMemberImageBase64;
+            const ok = await saveMembers();
+            if (ok) {
+                closeEditMemberModal();
+                showToast('Üye güncellendi ✅', 'success');
+                renderMembers();
+            } else {
+                showToast('Güncellenemedi', 'error');
+            }
+        }
+
+        async function removeMember(id) {
+            if (!isAdminMode) return;
+            if (!confirm('Bu üyeyi silmek istediğine emin misin?')) return;
+            members = members.filter(m => m.id !== id);
+            const ok = await saveMembers();
+            if (ok) {
+                showToast('Üye silindi', 'success');
+                renderMembers();
+                updateStats();
+            } else {
+                showToast('Silinemedi', 'error');
+            }
+        }
+
+        /* ============================================================
+           GALLERY CRUD
+           ============================================================ */
+        function openAddGalleryModal() {
+            if (!isAdminMode) return;
+            document.getElementById('galleryImageInput').value = '';
+            document.getElementById('galleryImagePreview').style.display = 'none';
+            document.getElementById('galleryCaption').value = '';
+            galleryImageBase64 = null;
+            document.getElementById('addGalleryModal').classList.add('open');
+        }
+
+        function closeAddGalleryModal() {
+            document.getElementById('addGalleryModal').classList.remove('open');
+        }
+
+        function previewGalleryImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                galleryImageBase64 = ev.target.result;
+                const img = document.getElementById('galleryImagePreview');
+                img.src = galleryImageBase64;
+                img.style.display = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function addGalleryImage() {
+            if (!galleryImageBase64) { showToast('Görsel seç', 'error'); return; }
+            const caption = document.getElementById('galleryCaption').value.trim();
+            const newImg = {
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                image: galleryImageBase64,
+                caption: caption || '',
+                date: new Date().toISOString(),
+            };
+            gallery.push(newImg);
+            const ok = await saveGallery();
+            if (ok) {
+                closeAddGalleryModal();
+                showToast('Görsel eklendi 🖼️', 'success');
+                renderGallery();
+                updateStats();
+            } else {
+                showToast('Kaydedilemedi', 'error');
+            }
+        }
+
+        async function removeGalleryImage(id) {
+            if (!isAdminMode) return;
+            if (!confirm('Bu görseli silmek istediğine emin misin?')) return;
+            gallery = gallery.filter(g => g.id !== id);
+            const ok = await saveGallery();
+            if (ok) {
+                showToast('Görsel silindi', 'success');
+                renderGallery();
+                updateStats();
+            } else {
+                showToast('Silinemedi', 'error');
+            }
+        }
+
+        /* ============================================================
+           ANNOUNCEMENTS CRUD
+           ============================================================ */
+        function openAddAnnouncementModal() {
+            if (!isAdminMode) return;
+            document.getElementById('annTitle').value = '';
+            document.getElementById('annContent').value = '';
+            document.getElementById('annPinned').checked = false;
+            document.getElementById('addAnnouncementModal').classList.add('open');
+        }
+
+        function closeAddAnnouncementModal() {
+            document.getElementById('addAnnouncementModal').classList.remove('open');
+        }
+
+        async function addAnnouncement() {
+            const title = document.getElementById('annTitle').value.trim();
+            const content = document.getElementById('annContent').value.trim();
+            if (!title || !content) { showToast('Başlık ve içerik gerekli', 'error'); return; }
+            const pinned = document.getElementById('annPinned').checked;
+            const newAnn = {
+                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                title,
+                content,
+                pinned,
+                date: new Date().toISOString(),
+            };
+            announcements.push(newAnn);
+            const ok = await saveAnnouncements();
+            if (ok) {
+                closeAddAnnouncementModal();
+                showToast('Duyuru yayınlandı 📢', 'success');
+                renderAnnouncements();
+                updateStats();
+            } else {
+                showToast('Kaydedilemedi', 'error');
+            }
+        }
+
+        async function togglePinAnnouncement(id) {
+            if (!isAdminMode) return;
+            const a = announcements.find(x => x.id === id);
+            if (!a) return;
+            a.pinned = !a.pinned;
+            const ok = await saveAnnouncements();
+            if (ok) {
+                showToast(a.pinned ? '📌 Sabitlendi' : 'Sabitlik kaldırıldı', 'success');
+                renderAnnouncements();
+            } else {
+                showToast('Güncellenemedi', 'error');
+            }
+        }
+
+        async function removeAnnouncement(id) {
+            if (!isAdminMode) return;
+            if (!confirm('Bu duyuruyu silmek istediğine emin misin?')) return;
+            announcements = announcements.filter(a => a.id !== id);
+            const ok = await saveAnnouncements();
+            if (ok) {
+                showToast('Duyuru silindi', 'success');
+                renderAnnouncements();
+                updateStats();
+            } else {
+                showToast('Silinemedi', 'error');
+            }
+        }
+
+        /* ============================================================
+           SETTINGS
+           ============================================================ */
+        function openSettingsModal() {
+            if (!isAdminMode) return;
+            document.getElementById('settingsClanName').value = settings.clanName || 'DİAGOSX';
+            document.getElementById('settingsClanTag').value = settings.clanTag || 'DG';
+            document.getElementById('settingsDesc').value = settings.description || '';
+            document.getElementById('settingsDiscord').value = settings.social?.discord || '';
+            document.getElementById('settingsYoutube').value = settings.social?.youtube || '';
+            document.getElementById('settingsInstagram').value = settings.social?.instagram || '';
+            document.getElementById('settingsTelegram').value = settings.social?.telegram || '';
+            document.getElementById('settingsLogoInput').value = '';
+            document.getElementById('settingsLogoPreview').style.display = 'none';
+            settingsLogoBase64 = null;
+            document.getElementById('settingsModal').classList.add('open');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('open');
+        }
+
+        function previewSettingsLogo(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                settingsLogoBase64 = ev.target.result;
+                const img = document.getElementById('settingsLogoPreview');
+                img.src = settingsLogoBase64;
+                img.style.display = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function saveSettings() {
+            settings.clanName = document.getElementById('settingsClanName').value.trim() || 'DİAGOSX';
+            settings.clanTag = document.getElementById('settingsClanTag').value.trim() || 'DG';
+            settings.description = document.getElementById('settingsDesc').value.trim();
+            if (!settings.social) settings.social = {};
+            settings.social.discord = document.getElementById('settingsDiscord').value.trim();
+            settings.social.youtube = document.getElementById('settingsYoutube').value.trim();
+            settings.social.instagram = document.getElementById('settingsInstagram').value.trim();
+            settings.social.telegram = document.getElementById('settingsTelegram').value.trim();
+            if (settingsLogoBase64) settings.logo = settingsLogoBase64;
+
+            const ok = await saveSettings();
+            if (ok) {
+                closeSettingsModal();
+                showToast('Ayarlar kaydedildi ⚙️', 'success');
+                renderPage(currentPage);
+                renderDownloads();
+                updateFooterSocials();
+            } else {
+                showToast('Kaydedilemedi', 'error');
+            }
+        }
+
+        /* ============================================================
+           DOWNLOADS
+           ============================================================ */
+        function downloadLogo() {
+            if (settings.logo) {
+                const link = document.createElement('a');
+                link.download = 'diagosx-logo.png';
+                link.href = settings.logo;
+                link.click();
+                showToast('Logo indiriliyor...', 'success');
+            } else {
+                showToast('Logo henüz yüklenmemiş', 'error');
+            }
+        }
+
+        /* ============================================================
+           UTILITY
+           ============================================================ */
+        function escHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+        }
+
+        function timeAgo(dateStr) {
+            const diff = Date.now() - new Date(dateStr).getTime();
+            const m = Math.floor(diff / 60000);
+            if (m < 1) return 'az önce';
+            if (m < 60) return `${m}dk önce`;
+            const h = Math.floor(m / 60);
+            if (h < 24) return `${h}sa önce`;
+            const d = Math.floor(h / 24);
+            if (d < 30) return `${d}g önce`;
+            return new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+        }
+
+        /* ============================================================
+           INIT
+           ============================================================ */
+        (async function init() {
+            // Force dark theme (no toggle)
+            document.documentElement.setAttribute('data-theme', 'dark');
+
+            await ensureFiles();
+            await loadAllData();
+
+            // Auto-refresh every 2 minutes
+            setInterval(async () => {
+                await loadAllData();
+            }, 120000);
+
+            // Close mobile menu on resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 920) closeMobileMenu();
+            });
+
+            // Close modals on overlay click
+            document.querySelectorAll('.modal-overlay').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    if (e.target === el) el.classList.remove('open');
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.open').forEach(el => el.classList.remove('open'));
+                    closeMobileMenu();
+                }
+            });
+
+            console.log('🚀 DİAGOSX Clan Panel (Profesyonel Sürüm)');
+        })();
+    </script>
+
+</body>
+</html>
